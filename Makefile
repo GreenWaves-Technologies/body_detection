@@ -61,7 +61,7 @@ GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$
 ifeq ($(platform),gvsoc)
   $(info Platform is GVSOC)
   override runner_args += --config-opt=flash/fs/files=$(realpath $(MODEL_TENSORS))
-  #GAP_FLAGS += -DNO_BRIDGE
+  GAP_FLAGS += -DNO_BRIDGE
 else
   $(info Platform is GAPUINO)
   PLPBRIDGE_FLAGS = -f $(MODEL_TENSORS)

@@ -27,7 +27,7 @@
 //#define PRINTF(...) ((void) 0)
 #define PRINTF printf
 
-#define FROM_CAMERA
+//#define FROM_CAMERA
 //#define NO_BRIDGE
 
 
