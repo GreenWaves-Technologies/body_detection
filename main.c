@@ -520,7 +520,7 @@ int main()
         pmsis_exit(-7);
     }
 
-    //Pay attention to hyper-ram freq while setting frequency of FC 
+    //Pay attention to hyper-flash freq while setting frequency of FC 
     pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
     pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
     #endif

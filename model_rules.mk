@@ -39,7 +39,7 @@ $(MODEL_BUILD)/$(MODEL_SRC): $(MODEL_STATE) $(MODEL_TFLITE)
 
 # Build the code generator from the model code
 $(MODEL_GEN_EXE): $(MODEL_BUILD)/$(MODEL_SRC)
-	gcc -g -o $(MODEL_GEN_EXE) -I$(TILER_INC) -I$(GEN_PATH) $(MODEL_BUILD)/$(MODEL_SRC) $(GEN_PATH)/CNN_Generators.c $(TILER_LIB) -lSDL2 -lSDL2_ttf
+	gcc -g -o $(MODEL_GEN_EXE) -I$(TILER_INC) -I$(GEN_PATH) $(MODEL_BUILD)/$(MODEL_SRC) $(GEN_PATH)/CNN_Generators.c $(TILER_LIB) # -lSDL2 -lSDL2_ttf
 
 # Run the code generator to generate GAP graph and kernel code
 $(MODEL_GEN_C): $(MODEL_GEN_EXE)
