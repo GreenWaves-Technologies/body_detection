@@ -1,6 +1,6 @@
 
-#ifndef __DAHUA_H__
-#define __DAHUA_H__
+#ifndef __BODY_DETECTION_H__
+#define __BODY_DETECTION_H__
 
 #ifdef __EMUL__
 #include <sys/types.h>
@@ -12,7 +12,7 @@
 #include "helpers/helpers.h"
 #endif
 
-extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE Dahua_L3_Flash;
+extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash;
 
 #endif
 
@@ -94,4 +94,4 @@ extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE Dahua_L3_Flash;
 |  24  | output_8                         | Q5.11 | Q5.11 |         |       |       |       |
 +------+----------------------------------+-------+-------+---------+-------+-------+-------+
 
-#endif
+#endif //__BODY_DETECTION_H__

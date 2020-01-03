@@ -8,12 +8,13 @@ ifndef GAP_SDK_HOME
   $(error Source sourceme in gap_sdk first)
 endif
 
-MODEL_PREFIX=Dahua
-ifndef MNIST_BITS
-  MNIST_BITS=16
+MODEL_PREFIX=body_detection
+
+ifndef QUANTIZATION_BITS
+  QUANTIZATION_BITS=16
 endif
 
-$(info Building GAP8 mode with $(MNIST_BITS) bit quantization)
+$(info Building GAP8 mode with $(QUANTIZATION_BITS) bit quantization)
 
 # For debugging don't load an image
 # Run the network with zeros
@@ -22,13 +23,13 @@ $(info Building GAP8 mode with $(MNIST_BITS) bit quantization)
 # The training of the model is slightly different depending on
 # the quantization. This is because in 8 bit mode we used signed
 # 8 bit so the input to the model needs to be shifted 1 bit
-ifeq ($(MNIST_BITS),8)
-  GAP_FLAGS += -DMNIST_8BIT
+ifeq ($(QUANTIZATION_BITS),8)
+  GAP_FLAGS += -DQUANTIZATION_8BIT
   NNTOOL_SCRIPT=model/nntool_script8
   MODEL_SUFFIX = _8BIT
 else
-  ifeq ($(MNIST_BITS),16)
-    GAP_FLAGS += -DMNIST_16BIT
+  ifeq ($(QUANTIZATION_BITS),16)
+    GAP_FLAGS += -DQUANTIZATION_16BIT
     NNTOOL_SCRIPT=model/nntool_script16
     MODEL_SUFFIX = _16BIT
   else
@@ -50,10 +51,10 @@ MODEL_L3_EXEC=hram
 MODEL_L3_CONST=hflash
 
 pulpChip = GAP
-APP = PeopleDetection
+APP = body_detection
 USE_PMSIS_BSP=1
 
-PULP_APP_SRCS += Dahua_main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_SRCS)
+PULP_APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_SRCS)
 
 GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns 
 GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD)

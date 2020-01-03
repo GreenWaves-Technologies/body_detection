@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 #include "Gap.h"
-#include "DahuaKernels.h"
+#include "body_detectionKernels.h"
 #include "SSDKernels.h"
 #include "SSDParams.h"
 #include "pmsis.h"
@@ -45,7 +45,7 @@ static pi_buffer_t buffer;
 struct pi_device HyperRam;
 static struct pi_hyperram_conf conf;
 
-AT_HYPERFLASH_FS_EXT_ADDR_TYPE Dahua_L3_Flash = 0;
+AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 
 #ifdef __EMUL__
 #include <sys/types.h>
@@ -234,7 +234,7 @@ static void RunNN()
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
 
-    DahuaCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
+    body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
 
 #if 0
@@ -567,7 +567,7 @@ int main()
             }
         #endif
 
-        if (DahuaCNN_Construct())
+        if (body_detectionCNN_Construct())
         {
             printf("Graph constructor exited with an error\n");
             pmsis_exit(-4);
@@ -581,7 +581,7 @@ int main()
     
 
         pi_cluster_send_task_to_cl(&cluster_dev, task);
-        DahuaCNN_Destruct();
+        body_detectionCNN_Destruct();
 
         //SSD Allocations
         SSDKernels_L1_Memory = pmsis_l1_malloc(_SSDKernels_L1_Memory_SIZE);
