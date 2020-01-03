@@ -49,13 +49,11 @@ void KerSDD3Dto2DShort(KerSDD3Dto2DShort_ArgT *Arg)
         }
     }
 
-    //TODO: This we need to be shure that classes are not split between PE
-    //The commented code does not work!
     if(Q){
-        //ChunkCell = ChunkSize(Win*Hin);
-        //First = CoreId*ChunkCell, Last  = Min(Win*Hin, First+ChunkCell); 
-        //for(int i=First;i<Last;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
-        if(!CoreId) for(int i=0;i<Win*Hin;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
+        ChunkCell = ChunkSize((Win/n_classes)*Hin);
+        First = CoreId*ChunkCell*n_classes, Last  = Min(Win*Hin, First+ChunkCell); 
+        for(int i=First;i<Last;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
+        //if(!CoreId) for(int i=0;i<Win*Hin;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
     }
     
 }
