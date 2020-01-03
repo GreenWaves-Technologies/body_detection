@@ -43,16 +43,17 @@ void KerSDD3Dto2DShort(KerSDD3Dto2DShort_ArgT *Arg)
     unsigned int First = CoreId*ChunkCell, Last  = Min(Win, First+ChunkCell);
 
     
-    for(int j=First;j<Last;j++){
-        for(int i=0;i<Hin;i++){
+    for(unsigned int j=First;j<Last;j++){
+        for(unsigned int i=0;i<Hin;i++){
             Out[j*Hin+i] = In[i*Win+j];
         }
     }
 
     if(Q){
+        //let's make sure that all classes for one "pixel" are elaborated by same core
         ChunkCell = ChunkSize((Win/n_classes)*Hin);
         First = CoreId*ChunkCell*n_classes, Last  = Min(Win*Hin, First+ChunkCell); 
-        for(int i=First;i<Last;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
+        for(unsigned int i=First;i<Last;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
         //if(!CoreId) for(int i=0;i<Win*Hin;i+=n_classes) SoftMax_fp16(&Out[i],n_classes,&Out[i],Q);
     }
     
@@ -111,7 +112,7 @@ static unsigned int Exp_fp_17_15(unsigned int X)
     FractX_s = FractX;
     Z_s = FractX;
     Result = 0;
-    for (int i = 1; i < ARRAYSIZE (ExpCoeffLUT); i++)
+    for (unsigned int i = 1; i < ARRAYSIZE (ExpCoeffLUT); i++)
     {
         Result += Z_s * ExpCoeffLUT[i]; // gap8_macs(Result, Z, ExpCoeffLUT[ i ]);
         Z_s = gap_mulsRN(Z_s, FractX_s, 15);
@@ -140,7 +141,7 @@ void SoftMax_fp16(
 
     int M, Sum, InvSum;
 
-    /* Turns In into distribution
+    /* Turns In into distribution */
     /* Find max */
     M = 0x80000000;
     for (int i = 0; i < i_size; i++) M = Max(M, In[i]);
@@ -183,13 +184,12 @@ void KerEstimate_bbox(int index,int global_index,int confidence, short int *Boxe
     j_loc    = anchor_location%Anchors->feature_map_width;
 
     // step 2: Identify the offsets
-    cx_offset = Boxes[index*Anchors->anchor_params+0];//Q11
-    cy_offset = Boxes[index*Anchors->anchor_params+1];//Q11
-    w_offset  = Boxes[index*Anchors->anchor_params+2];//Q11
-    h_offset  = Boxes[index*Anchors->anchor_params+3];//Q11
+    cx_offset = Boxes[index*Anchors->anchor_params+0];
+    cy_offset = Boxes[index*Anchors->anchor_params+1];
+    w_offset  = Boxes[index*Anchors->anchor_params+2];
+    h_offset  = Boxes[index*Anchors->anchor_params+3];
     //printf("%f\n",FIX2FP(w_offset,11));
     //printf("%f\n",FIX2FP(h_offset,11));
-    
 
     // step 3: calculate default anchor parameters for this location
     cx = FP2FIX(((zero_width  + (float)j_loc * Anchors->step_width)/(float)Anchors->img_width)  , 20);
@@ -273,11 +273,10 @@ void KerPredecoderShort(KerPredecoderShort_ArgT *Arg){
     
     unsigned int CoreId = gap_coreid();
 
-
     if(!CoreId){
-        for(int i=0;i<H;i++){
+        for(unsigned int i=0;i<H;i++){
             int global_index = TileIndex*Std_H;
-        //we start from 1 since we skip the Background
+            //we start from 1 since we skip the Background
             for(uint8_t n=1;n<W;n++){
 
             //Here it would be nice to add a different confidence for each class

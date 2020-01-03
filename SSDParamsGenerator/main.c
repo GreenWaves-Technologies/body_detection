@@ -179,6 +179,7 @@ void Generate_anchor_layer_output(FILE * sf, FILE * hf, Alps * anchor_layer,int 
     fprintf(sf,"\tanchor_layer_%d->n_anchors   =  %d;\n",postFIX,anchor_layer->n_anchors);    
     fprintf(sf,"\tanchor_layer_%d->n_variances =  %d;\n",postFIX,anchor_layer->n_variances);    
     fprintf(sf,"\tanchor_layer_%d->anchorsWH = anchorWH_%d;\n",postFIX,postFIX);
+    fprintf(sf,"\treturn 0;\n");
     fprintf(sf,"}\n");
     fprintf(sf,"\n");
 
