@@ -403,15 +403,6 @@ int main()
     PRINTF("Entering main controller\n");
 
     if (rt_event_alloc(NULL, 16)) return -1;
-    
-    //To use file IO system
-#ifndef __EMUL__
-#ifndef NO_BRIDGE
-#ifndef FROM_CAMERA
-    rt_bridge_connect(1, NULL);
-#endif
-#endif    
-#endif
 
 #ifdef FROM_CAMERA
 
@@ -627,9 +618,6 @@ int main()
 #ifdef __EMUL__
     dt_close_dump_file();
 #else
-#ifndef NO_BRIDGE
-    rt_bridge_disconnect(NULL);
-#endif
 #endif
 
     printf("Ended\n");
