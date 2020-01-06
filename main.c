@@ -261,8 +261,6 @@ static void RunNN()
     }
     printf("\n");
 
-
-
     // free L2 memory after analysis
     pmsis_l2_malloc_free(L2_buffer, size_to_check*sizeof(short));
 #endif
@@ -374,6 +372,35 @@ void drawBboxes(bboxs_t *boundbxs, uint8_t *img){
         }
     }
 }
+
+int checkResults(bboxs_t *boundbxs){
+    int totAliveBB=0;
+    int x,y,w,h;
+
+    for (int counter=0;counter< boundbxs->num_bb;counter++){
+        if(boundbxs->bbs[counter].alive){
+            totAliveBB++;
+            x = boundbxs->bbs[counter].x;
+            y = boundbxs->bbs[counter].y;
+            w = boundbxs->bbs[counter].w;
+            h = boundbxs->bbs[counter].h;
+        }
+    }
+
+    //Cabled check of result
+    if(totAliveBB!=1) return -1;
+    if( x != 74 )         return -1;
+    if( y != 28 )         return -1;
+    if( w != 24 )         return -1;
+    if( h != 73 )         return -1;
+
+    return 0;
+
+}
+
+
+//  074    028     024    073     01
+
 
 
 
@@ -521,8 +548,8 @@ int main()
     }
 
     //Pay attention to hyper-flash freq while setting frequency of FC 
-    pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
-    pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
+    //pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
+    //pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
     #endif
 
     if(initSSD())
@@ -608,7 +635,6 @@ int main()
         #endif
     }
 
-
 #ifndef __EMUL__
     // Close the cluster
     pi_cluster_close(&cluster_dev);
@@ -621,5 +647,16 @@ int main()
 #endif
 
     printf("Ended\n");
+    
+    if(checkResults(&bbxs)==0){
+        printf("Correct results!\n");
+        return 0;
+    }
+    else{
+        printf("Wrong results!\n");
+        return -1;
+    }
+
+
     return 0;
 }
