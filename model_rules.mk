@@ -19,6 +19,10 @@ endif
 $(MODEL_BUILD):
 	mkdir $(MODEL_BUILD)	
 
+# Runs the Keras script to create and train the model
+# Exports the graph and trained tensors in H5 format
+# $(MODEL_H5): $(MODEL_TRAIN) | $(MODEL_TRAIN_BUILD)
+# 	$(MODEL_PYTHON) $(MODEL_TRAIN) $(MODEL_TRAIN_FLAGS) -e $(TRAINING_EPOCHS) $@
 
 # Converts the H5 file to TFLITE format
 $(MODEL_TFLITE): $(MODEL_BUILD)
