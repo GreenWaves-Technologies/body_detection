@@ -95,6 +95,7 @@ all:: SSD_model model
 
 clean:: #clean_model
 	rm -rf BUILD
+	rm -rf GenTile
 	cd SSDParamsGenerator && $(MAKE) clean
 	rm -rf SSDParams.c SSDParams.h
 	rm -rf GenSSDTile $(SSD_MODEL_GEN_CLEAN)

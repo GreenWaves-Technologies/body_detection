@@ -21,13 +21,13 @@ void ${gen.project_name}Model(unsigned int L1Memory, unsigned int L2Memory, unsi
     SetSymbolDynamics();
 
     AT_SetGraphCtrl(AT_GRAPH_MONITOR_CYCLES, AT_OPT_ON);
-    AT_SetGraphCtrl(AT_GRAPH_MONITOR_CVAR_NAME, "MnistPerf");
+    AT_SetGraphCtrl(AT_GRAPH_MONITOR_CVAR_NAME, "NNPerf");
     AT_SetGraphCtrl(AT_GRAPH_PRODUCE_NODE_NAMES, AT_OPT_ON);
-    AT_SetGraphCtrl(AT_GRAPH_PRODUCE_NODE_CVAR_NAME, "MnistLName");
+    AT_SetGraphCtrl(AT_GRAPH_PRODUCE_NODE_CVAR_NAME, "NNLName");
     AT_SetGraphCtrl(AT_GRAPH_NOINLINE_NODE, AT_OPT_ON);
 
     AT_SetGraphCtrl(AT_GRAPH_PRODUCE_OPERINFOS, AT_OPT_ON);
-    AT_SetGraphCtrl(AT_GRAPH_PRODUCE_OPERINFOS_CVAR_NAME, "MnistOperCount");
+    AT_SetGraphCtrl(AT_GRAPH_PRODUCE_OPERINFOS_CVAR_NAME, "NNOperCount");
 
 //    AT_SetGraphCtrl(AT_GRAPH_REORDER_CONSTANT_IN, AT_OPT_ON);
 

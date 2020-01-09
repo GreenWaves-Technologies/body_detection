@@ -24,8 +24,8 @@
 #endif
 
 
-//#define PRINTF(...) ((void) 0)
-#define PRINTF printf
+#define PRINTF(...) ((void) 0)
+//#define PRINTF printf
 
 //#define FROM_CAMERA
 //#define NO_BRIDGE
@@ -163,7 +163,7 @@ void printBboxes_forPython(bboxs_t *boundbxs){
 
     for (int counter=0;counter< boundbxs->num_bb;counter++){
         if(boundbxs->bbs[counter].alive)
-            printf("rect = patches.Rectangle((%d,%d),%d,%d,linewidth=1,edgecolor='r',facecolor='none')\nax.add_patch(rect)\n",
+            PRINTF("rect = patches.Rectangle((%d,%d),%d,%d,linewidth=1,edgecolor='r',facecolor='none')\nax.add_patch(rect)\n",
                 boundbxs->bbs[counter].x,
                 boundbxs->bbs[counter].y,
                 boundbxs->bbs[counter].w,
@@ -399,11 +399,6 @@ int checkResults(bboxs_t *boundbxs){
 }
 
 
-//  074    028     024    073     01
-
-
-
-
 #ifdef __EMUL__
 int main(int argc, char *argv[])
 {
@@ -548,8 +543,8 @@ int main()
     }
 
     //Pay attention to hyper-flash freq while setting frequency of FC 
-    //pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
-    //pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
+    pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
+    pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
     #endif
 
     if(initSSD())
@@ -558,7 +553,7 @@ int main()
         pmsis_exit(-6);
     }
     
-    printf("Running NN\n");
+    PRINTF("Running NN\n");
 
     struct pi_cluster_task *task = pmsis_l2_malloc(sizeof(struct pi_cluster_task));
     if(task==NULL) {
@@ -599,6 +594,21 @@ int main()
     
 
         pi_cluster_send_task_to_cl(&cluster_dev, task);
+        #ifndef FROM_CAMERA
+        {
+            unsigned int TotalCycles = 0, TotalOper = 0;
+            printf("\n");
+            for (unsigned int i=0; i<(sizeof(NNPerf)/sizeof(unsigned int)); i++)
+            {
+                printf("%45s: %10d, Operation: %10d, Operation/Cycle: %f\n", NNLName[i], NNPerf[i], NNOperCount[i], ((float) NNOperCount[i])/ NNPerf[i]);
+                TotalCycles += NNPerf[i]; TotalOper += NNOperCount[i];
+            }
+            printf("\n");
+            printf("%45s: %10d, Operation: %10d, Operation/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float) TotalOper)/ TotalCycles);
+            printf("\n");
+        }
+        #endif  /* FROM_CAMERA */
+
         body_detectionCNN_Destruct();
 
         //SSD Allocations
@@ -646,7 +656,7 @@ int main()
 #else
 #endif
 
-    printf("Ended\n");
+    PRINTF("Ended\n");
     
     if(checkResults(&bbxs)==0){
         printf("Correct results!\n");
