@@ -1,33 +1,10 @@
 adjust
 fusions
-aquant -f 16 test_samples/*.pgm -D 256 -O 0
-#aquant -f 16 test_samples/*.png -D 256 -O 0
-qtune 1 dp
-qtune 2 dp
-qtune 3 dp
-qtune 4 dp
-qtune 5 dp
-qtune 6 dp
-qtune 7 dp
-qtune 8 dp
-qtune 9 dp
-qtune 11 dp
-qtune 14 dp
-qtune 15 dp
-qtune 16 dp
-qtune 17 dp
-qtune 18 dp
-qtune 20 dp
-qtune 23 dp
-qtune 24 dp
-qtune 25 dp
-qtune 26 dp
-qtune 27 dp
-qtune 29 dp
-qtune 32 dp
-qtune 33 dp
-qtune 34 dp
-qtune 35 dp
-qtune 36 dp
-qtune 38 dp
+set input_divisor 256
+set input_offset 0
+aquant -f 16 test_samples/*.pgm
+#aquant -f 16 test_samples/*.png
+set default_output_exec_location AT_MEM_L3_HRAM
+set l3_ram_ext_managed 1
+set l2_ram_ext_managed 0
 save_state

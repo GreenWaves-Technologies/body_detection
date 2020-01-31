@@ -18,6 +18,10 @@ void ${gen.project_name}Model(unsigned int L1Memory, unsigned int L2Memory, unsi
 {
     KernelOper_T Cop = KOP_CONV;
 
+    CNN_GenControl_T Ctrl;
+
+    CNN_InitGenCtrl(&Ctrl);
+
     SetSymbolDynamics();
 
     AT_SetGraphCtrl(AT_GRAPH_MONITOR_CYCLES, AT_OPT_ON);
@@ -34,7 +38,7 @@ void ${gen.project_name}Model(unsigned int L1Memory, unsigned int L2Memory, unsi
     SetUsedFilesNames(0, 2, "CNN_BasicKernels.h", "${gen.project_name}.h");
     SetGeneratedFilesNames("${gen.project_name}Kernels.c", "${gen.project_name}Kernels.h");
 
-    ${gen.memory_device_generator(indent=1,L3RamUserManaged=1,L3FlashUserManaged=0)}
+    ${gen.memory_device_generator(indent=1)}
 
     SetAT_TestFile("AT_${gen.project_name}Test.inc");
 
@@ -46,7 +50,7 @@ ${gen.kernel_generator(indent=1)}
 #ifdef GRAPH
     CreateGraph("${gen.project_name}CNN",
         /* Arguments either passed or globals */
-    ${gen.global_generator(indent=2,forceinputLocation='',forceoutputLocation='AT_MEM_L3_HRAM')},
+    ${gen.global_generator(indent=2)},
         /* Locals, allocated dynamically */
 ${gen.local_generator(indent=2)}
     );
