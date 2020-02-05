@@ -44,7 +44,7 @@ $(MODEL_GEN_EXE): $(MODEL_BUILD)/$(MODEL_SRC)
 # Run the code generator to generate GAP graph and kernel code
 $(MODEL_GEN_C): $(MODEL_GEN_EXE)
 	$(MODEL_GEN_EXE) -o $(MODEL_BUILD) -c $(MODEL_BUILD) 
-	--L1 $(MODEL_L1_MEMORY) --L2 $(MODEL_L2_MEMORY) --L3 $(MODEL_L3_MEMORY) # --PExecL3 $(MODEL_L3_EXEC) --PConstL3 $(MODEL_L3_CONST)
+	#--L1 $(MODEL_L1_MEMORY) --L2 $(MODEL_L2_MEMORY) --L3 $(MODEL_L3_MEMORY) # --PExecL3 $(MODEL_L3_EXEC) --PConstL3 $(MODEL_L3_CONST)
 
 model: $(MODEL_GEN_C)
 
