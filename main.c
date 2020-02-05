@@ -24,8 +24,8 @@
 #endif
 
 
-#define PRINTF(...) ((void) 0)
-//#define PRINTF printf
+//#define PRINTF(...) ((void) 0)
+#define PRINTF printf
 
 //#define FROM_CAMERA
 //#define NO_BRIDGE
@@ -289,19 +289,19 @@ static void RunSSD()
 
     SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,13,2);
     SDD3Dto2D_80_60_24(Output_5,tmp_buffer_boxes,0,0);
-    Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,10);
+    Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,11);
 
-    SDD3Dto2DSoftmax_40_30_14(Output_2,tmp_buffer_classes,11,2);
+    SDD3Dto2DSoftmax_40_30_14(Output_2,tmp_buffer_classes,12,2);
     SDD3Dto2D_40_30_28(Output_6,tmp_buffer_boxes,0,0);
-    Predecoder40_30(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_2, &bbxs,11);
+    Predecoder40_30(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_2, &bbxs,12);
     
-    SDD3Dto2DSoftmax_20_15_16(Output_3,tmp_buffer_classes,12,2);
+    SDD3Dto2DSoftmax_20_15_16(Output_3,tmp_buffer_classes,13,2);
     SDD3Dto2D_20_15_32(Output_7,tmp_buffer_boxes,0,0);
-    Predecoder20_15(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_3,&bbxs,11);
+    Predecoder20_15(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_3,&bbxs,12);
     
     SDD3Dto2DSoftmax_10_7_14(Output_4,tmp_buffer_classes,13,2);
     SDD3Dto2D_10_7_28(Output_8,tmp_buffer_boxes,0,0);
-    Predecoder10_7(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_4, &bbxs,11);
+    Predecoder10_7(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_4, &bbxs,12);
 
 
     bbox_t temp;
@@ -390,9 +390,9 @@ int checkResults(bboxs_t *boundbxs){
     //Cabled check of result
     if(totAliveBB!=1) return -1;
     if( x != 74 )         return -1;
-    if( y != 28 )         return -1;
-    if( w != 24 )         return -1;
-    if( h != 73 )         return -1;
+    if( y != 26 )         return -1;
+    if( w != 28 )         return -1;
+    if( h != 79 )         return -1;
 
     return 0;
 
@@ -543,8 +543,8 @@ int main()
     }
 
     //Pay attention to hyper-flash freq while setting frequency of FC 
-    pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
-    pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
+    //pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
+    //pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
     #endif
 
     if(initSSD())

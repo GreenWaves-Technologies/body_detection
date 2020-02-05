@@ -56,6 +56,7 @@ USE_PMSIS_BSP=1
 
 PULP_APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_SRCS)
 
+GAP_FLAGS += -g
 GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns 
 GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD)
 
