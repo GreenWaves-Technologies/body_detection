@@ -4,6 +4,17 @@
 # This software may be modified and distributed under the terms
 # of the BSD license.  See the LICENSE file for details.
 
+
+## Mute printf in source code
+#SILENT=1
+
+## Enable image grub from camera and disaply output to lcd
+#FROM_CAMERA=1
+
+## This is used for Jenkins test to use input form .h header file
+#NO_BRIDGE=1
+
+
 ifndef GAP_SDK_HOME
   $(error Source sourceme in gap_sdk first)
 endif
@@ -59,6 +70,20 @@ PULP_APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDPa
 GAP_FLAGS += -g -w
 GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns 
 GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD)
+
+ifeq ($(SILENT),1)
+  APP_CFLAGS += -DSILENT=1
+endif
+
+
+ifeq ($(FROM_CAMERA),1)
+  APP_CFLAGS += -FROM_CAMERA=1
+endif
+
+ifeq ($(NO_BRIDGE),1)
+  APP_CFLAGS += -NO_BRIDGE=1
+endif
+
 
 ifeq ($(platform),gvsoc)
   $(info Platform is GVSOC)

@@ -23,12 +23,11 @@
 #endif
 #endif
 
-
-//#define PRINTF(...) ((void) 0)
+#if SILENT
+#define PRINTF(...) ((void) 0)
+#else
 #define PRINTF printf
-
-//#define FROM_CAMERA
-//#define NO_BRIDGE
+#endif
 
 
 struct pi_device ili;
@@ -236,34 +235,6 @@ static void RunNN()
 
     body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
-
-#if 0
-    int size_to_check=20;
-    // l2 memory for Output_3
-    short * L2_buffer = (short int *) pmsis_l2_malloc(size_to_check*sizeof(short));
-
-    // memory allocation has been successful?
-    if (L2_buffer ==NULL){printf("\n\nL2memory allocation fail ...\n\n");}
-
-    // pass data from L3 to L2
-    //pi_ram_read(&HyperRam, Output_3, L2_buffer, size_to_check*sizeof(short int));
-
-    pi_cl_ram_req_t buff_req;
-    pi_cl_ram_read(&HyperRam,Output_8, L2_buffer, size_to_check*sizeof(short int), &buff_req);
-    pi_cl_ram_read_wait(&buff_req);
-    
-
-    printf("Debug:\n");
-    // check the value of the outputs for the given input image
-    for (int loc = 0;loc<size_to_check;loc++){
-//    printf("\n\n\nFixed point, L2_Output_3 [%d] : %d\n\n\n", loc, L2_Output_3[loc]);
-        printf(" %f", loc, FIX2FP(L2_buffer[loc], 11));
-    }
-    printf("\n");
-
-    // free L2 memory after analysis
-    pmsis_l2_malloc_free(L2_buffer, size_to_check*sizeof(short));
-#endif
 
     ti_nn = gap_cl_readhwtimer()-ti;
     PRINTF("Cycles NN : %10d\n",ti_nn);
