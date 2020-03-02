@@ -77,21 +77,23 @@ endif
 
 
 ifeq ($(FROM_CAMERA),1)
-  APP_CFLAGS += -FROM_CAMERA=1
+  APP_CFLAGS += -DFROM_CAMERA=1
 endif
 
 ifeq ($(NO_BRIDGE),1)
-  APP_CFLAGS += -NO_BRIDGE=1
+  APP_CFLAGS += -DNO_BRIDGE=1
 endif
 
 
 ifeq ($(platform),gvsoc)
   $(info Platform is GVSOC)
-  override runner_args += --config-opt=flash/fs/files=$(realpath $(MODEL_TENSORS))
+  READFS_FILES=$(MODEL_TENSORS)
+#  override runner_args += --config-opt=flash/fs/files=$(realpath $(MODEL_TENSORS))
 #  GAP_FLAGS += -DNO_BRIDGE
 else
   $(info Platform is GAPUINO)
-  PLPBRIDGE_FLAGS = -f $(MODEL_TENSORS)
+  PLPBRIDGE_FLAGS = -f
+  READFS_FILES=$(MODEL_TENSORS)
 endif
 
 export GAP_USE_OPENOCD=1
