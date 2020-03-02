@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+#include "setup.h"
 #include "Gap.h"
 #include "body_detectionKernels.h"
 #include "SSDKernels.h"
@@ -96,9 +97,9 @@ PI_L2 bboxs_t bbxs;
 static int initSSD(){
 
     #ifdef __EMUL__
-    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_fp_t)*200);
+    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_fp_t)*MAX_BB);
     #else
-    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_t)*200);
+    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_t)*MAX_BB);
     #endif
 
     if(bbxs.bbs==NULL){
@@ -173,8 +174,8 @@ void printBboxes_forPython(bboxs_t *boundbxs){
 
 #define NON_MAX_THRES 10
 
-int rect_intersect_area( unsigned short a_x, unsigned short a_y, unsigned short a_w, unsigned short a_h,
-                         unsigned short b_x, unsigned short b_y, unsigned short b_w, unsigned short b_h ){
+int rect_intersect_area( short a_x, short a_y, short a_w, short a_h,
+                         short b_x, short b_y, short b_w, short b_h ){
 
     #define MIN(a,b) ((a) < (b) ? (a) : (b))
     #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -226,7 +227,6 @@ void non_max_suppress(bboxs_t * boundbxs){
 static void RunNN()
 {
 
-
     unsigned int ti,ti_nn,ti_ssd;
 
     gap_cl_starttimer();
@@ -235,7 +235,6 @@ static void RunNN()
 
     body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
-
     ti_nn = gap_cl_readhwtimer()-ti;
     PRINTF("Cycles NN : %10d\n",ti_nn);
 }
@@ -243,7 +242,6 @@ static void RunNN()
     /////////////////////
     //SSD Code
     /////////////////////
-
 
 static void RunSSD()
 {
@@ -384,7 +382,9 @@ int main(int argc, char *argv[])
 
 int main()
 {
-    char *ImageName = "../../../test_samples/img_OUT0.pgm";
+    //char *ImageName = "../../../test_samples/img_OUT0.pgm";
+    char *ImageName = "../../../samples/test_people.pgm";
+    
 
 #endif
     unsigned int Wi, Hi;
@@ -396,6 +396,7 @@ int main()
     PRINTF("Entering main controller\n");
 
     if (rt_event_alloc(NULL, 16)) return -1;
+    pi_freq_set(PI_FREQ_DOMAIN_FC,150000000);
 
 #ifdef FROM_CAMERA
 
@@ -513,9 +514,6 @@ int main()
         pmsis_exit(-7);
     }
 
-    //Pay attention to hyper-flash freq while setting frequency of FC 
-    //pi_freq_set(PI_FREQ_DOMAIN_FC,100000000);
-    //pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
     #endif
 
     if(initSSD())
@@ -533,6 +531,8 @@ int main()
     }
     
     int iter=1;
+
+    pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
 
     while(iter){
 
@@ -612,7 +612,7 @@ int main()
         //Draw BBs
         drawBboxes(&bbxs,ImageInChar);
         //Send to Screen
-        pi_display_write(&ili, &buffer, 0, 0, 160, 120);
+        pi_display_write(&ili, &buffer, 60, 80, 160, 120);
         #endif
     }
 
