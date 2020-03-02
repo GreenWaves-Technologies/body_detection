@@ -172,8 +172,6 @@ void printBboxes_forPython(bboxs_t *boundbxs){
 }
 
 
-#define NON_MAX_THRES 10
-
 int rect_intersect_area( short a_x, short a_y, short a_w, short a_h,
                          short b_x, short b_y, short b_w, short b_h ){
 
@@ -382,8 +380,8 @@ int main(int argc, char *argv[])
 
 int main()
 {
-    //char *ImageName = "../../../test_samples/img_OUT0.pgm";
-    char *ImageName = "../../../samples/test_people.pgm";
+    char *ImageName = "../../../test_samples/img_OUT0.pgm";
+    //char *ImageName = "../../../samples/test_people.pgm";
     
 
 #endif
@@ -413,6 +411,8 @@ int main()
         printf("Failed to open display\n");
         pmsis_exit(-1);
     }
+
+
 
     buffer.data = ImageInChar;
     buffer.stride = 0;
@@ -612,7 +612,7 @@ int main()
         //Draw BBs
         drawBboxes(&bbxs,ImageInChar);
         //Send to Screen
-        pi_display_write(&ili, &buffer, 60, 80, 160, 120);
+        pi_display_write(&ili, &buffer, 60, 60, 160, 120);
         #endif
     }
 
