@@ -412,6 +412,10 @@ int main()
         pmsis_exit(-1);
     }
 
+    writeFillRect(&ili, 0, 0, 240, 320, 0xFFFF);
+    writeText(&ili, "  GreenWaves", 3);
+    writeText(&ili, "\n Technologies", 3);
+    //writeFillRect(&ili, 0, posY, LCD_WIDTH, LCD_TXT_HEIGHT(fontsize), LCD_BG_CLR);
 
 
     buffer.data = ImageInChar;
@@ -612,7 +616,7 @@ int main()
         //Draw BBs
         drawBboxes(&bbxs,ImageInChar);
         //Send to Screen
-        pi_display_write(&ili, &buffer, 60, 60, 160, 120);
+        pi_display_write(&ili, &buffer, 40, 60, 160, 120);
         #endif
     }
 
