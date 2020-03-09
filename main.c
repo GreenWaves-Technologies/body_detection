@@ -68,6 +68,15 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 //PI_L2 short int *L2_Output_1, *L2_Output_2, *L2_Output_3, *L2_Output_4, *L2_Output_5, *L2_Output_6, *L2_Output_7, *L2_Output_8;
 
 
+#define OUTPUT_1_Q 13
+#define OUTPUT_5_Q 11
+#define OUTPUT_2_Q 12
+#define OUTPUT_6_Q 12
+#define OUTPUT_3_Q 13
+#define OUTPUT_7_Q 12
+#define OUTPUT_4_Q 13
+#define OUTPUT_8_Q 12
+
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
 
 typedef short int MNIST_IMAGE_IN_T;
@@ -254,21 +263,21 @@ static void RunSSD()
     
     //TODO Quantization is likely wrong need to check output
 
-    SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,13,2);
+    SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,OUTPUT_1_Q,2);
     SDD3Dto2D_80_60_24(Output_5,tmp_buffer_boxes,0,0);
-    Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,11);
+    Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,OUTPUT_5_Q);
 
-    SDD3Dto2DSoftmax_40_30_14(Output_2,tmp_buffer_classes,12,2);
+    SDD3Dto2DSoftmax_40_30_14(Output_2,tmp_buffer_classes,OUTPUT_2_Q,2);
     SDD3Dto2D_40_30_28(Output_6,tmp_buffer_boxes,0,0);
-    Predecoder40_30(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_2, &bbxs,12);
+    Predecoder40_30(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_2, &bbxs,OUTPUT_6_Q);
     
-    SDD3Dto2DSoftmax_20_15_16(Output_3,tmp_buffer_classes,13,2);
+    SDD3Dto2DSoftmax_20_15_16(Output_3,tmp_buffer_classes,OUTPUT_3_Q,2);
     SDD3Dto2D_20_15_32(Output_7,tmp_buffer_boxes,0,0);
-    Predecoder20_15(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_3,&bbxs,12);
+    Predecoder20_15(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_3,&bbxs,OUTPUT_7_Q);
     
-    SDD3Dto2DSoftmax_10_7_14(Output_4,tmp_buffer_classes,13,2);
+    SDD3Dto2DSoftmax_10_7_14(Output_4,tmp_buffer_classes,OUTPUT_4_Q,2);
     SDD3Dto2D_10_7_28(Output_8,tmp_buffer_boxes,0,0);
-    Predecoder10_7(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_4, &bbxs,12);
+    Predecoder10_7(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_4, &bbxs,OUTPUT_8_Q);
 
 
     bbox_t temp;
@@ -357,7 +366,7 @@ int checkResults(bboxs_t *boundbxs){
     //Cabled check of result
     if(totAliveBB!=1) return -1;
     if( x != 74 )         return -1;
-    if( y != 26 )         return -1;
+    if( y != 27 )         return -1;
     if( w != 28 )         return -1;
     if( h != 79 )         return -1;
 
