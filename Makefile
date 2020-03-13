@@ -12,6 +12,7 @@
 #FROM_CAMERA=1
 
 ## This is used for Jenkins test to use input form .h header file
+# not used in this project
 #NO_BRIDGE=1
 
 
@@ -67,7 +68,7 @@ USE_PMSIS_BSP=1
 
 PULP_APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_SRCS)
 
-GAP_FLAGS += -g -w
+GAP_FLAGS += -g -w -DNORM_ROUND
 GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns 
 GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD)
 

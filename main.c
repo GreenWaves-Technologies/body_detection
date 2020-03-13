@@ -67,6 +67,7 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 //static short int *L2_Output_1, L2_Output_2, L2_Output_3, L2_Output_4, L2_Output_5, L2_Output_6, L2_Output_7, L2_Output_8;
 //PI_L2 short int *L2_Output_1, *L2_Output_2, *L2_Output_3, *L2_Output_4, *L2_Output_5, *L2_Output_6, *L2_Output_7, *L2_Output_8;
 
+#define INPUT_1_Q 15
 
 #define OUTPUT_1_Q 13
 #define OUTPUT_5_Q 11
@@ -261,8 +262,6 @@ static void RunSSD()
     //Set Boundinx Boxes to 0
     bbxs.num_bb = 0;
     
-    //TODO Quantization is likely wrong need to check output
-
     SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,OUTPUT_1_Q,2);
     SDD3Dto2D_80_60_24(Output_5,tmp_buffer_boxes,0,0);
     Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,OUTPUT_5_Q);
@@ -363,12 +362,12 @@ int checkResults(bboxs_t *boundbxs){
         }
     }
 
-    //Cabled check of result
+    //Cabled check of result (not nice but effective) with +/- 3 px tollerance
     if(totAliveBB!=1) return -1;
-    if( x != 74 )         return -1;
-    if( y != 26 )         return -1;
-    if( w != 28 )         return -1;
-    if( h != 79 )         return -1;
+    if( x > 74 + 2 || x < 74 - 2 )         return -1;
+    if( y > 26 + 2 || y < 26 - 2 )         return -1;
+    if( w > 24 + 2 || w < 24 - 2 )         return -1;
+    if( h > 73 + 2 || h < 73 - 2 )         return -1;
 
     return 0;
 
@@ -469,13 +468,13 @@ int main()
 
     for (int i = W * H - 1; i >= 0; i--)
     {
-        ImageIn[i] = ImageInChar[i] << 6; //Input is Q14
+        ImageIn[i] = ImageInChar[i] << INPUT_1_Q-8; //Input is Q14
     }
 
     #else
     for (int i = W * H - 1; i >= 0; i--)
     {
-        ImageIn[i] = inImage[i] << 6; //Input is Q14
+        ImageIn[i] = inImage[i] << INPUT_1_Q-8; //Input is Q14
     }
     #endif
 #endif
@@ -619,7 +618,7 @@ int main()
         #ifdef FROM_CAMERA
         for(int y=0;y<120;y++){
             for(int x=0;x<160;x++){
-                ImageInChar[y*160+x] = (unsigned char)(ImageIn[(y*160)+(x)] >> 6);
+                ImageInChar[y*160+x] = (unsigned char)(ImageIn[(y*160)+(x)] >> INPUT_1_Q-8);
             }
         }
         //Draw BBs
