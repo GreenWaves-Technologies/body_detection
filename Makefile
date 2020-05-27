@@ -28,6 +28,19 @@ endif
 
 $(info Building GAP8 mode with $(QUANTIZATION_BITS) bit quantization)
 
+#MODEL_SQ8=1
+ifdef MODEL_SQ8
+  CNN_GEN = $(MODEL_GEN_SQ8)
+  CNN_GEN_INCLUDE = $(MODEL_GEN_INCLUDE_SQ8)
+  CNN_LIB = $(MODEL_LIB_SQ8)
+  CNN_LIB_INCLUDE = $(MODEL_LIB_INCLUDE_SQ8)
+else
+  CNN_GEN = $(MODEL_GEN_POW2) 
+  CNN_GEN_INCLUDE = $(MODEL_GEN_INCLUDE_POW2)
+  CNN_LIB = $(MODEL_LIB_POW2)
+  CNN_LIB_INCLUDE = $(MODEL_LIB_INCLUDE_POW2)
+endif
+
 # For debugging don't load an image
 # Run the network with zeros
 #NO_IMAGE=1
@@ -51,6 +64,7 @@ endif
 
 include model_decl.mk
 
+
 # Here we set the memory allocation for the generated kernels
 # REMEMBER THAT THE L1 MEMORY ALLOCATION MUST INCLUDE SPACE
 # FOR ALLOCATED STACKS!
@@ -64,13 +78,12 @@ MODEL_L3_CONST=hflash
 
 pulpChip = GAP
 APP = body_detection
-USE_PMSIS_BSP=1
 
-PULP_APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_SRCS)
+APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_GEN_C) $(CNN_LIB) 
 
 GAP_FLAGS += -g -w -DNORM_ROUND
-GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns 
-GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD)
+GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns
+GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD) $(CNN_LIB_INCLUDE)
 
 ifeq ($(SILENT),1)
   APP_CFLAGS += -DSILENT=1
@@ -89,15 +102,12 @@ endif
 ifeq ($(platform),gvsoc)
   $(info Platform is GVSOC)
   READFS_FILES=$(MODEL_TENSORS)
-#  override runner_args += --config-opt=flash/fs/files=$(realpath $(MODEL_TENSORS))
-#  GAP_FLAGS += -DNO_BRIDGE
 else
   $(info Platform is GAPUINO)
   PLPBRIDGE_FLAGS = -f
   READFS_FILES=$(MODEL_TENSORS)
 endif
 
-export GAP_USE_OPENOCD=1
 io=host
 
 #####Here we add cutom kernels that are not yet integrated into AT libraries
@@ -128,8 +138,7 @@ clean:: #clean_model
 	rm -rf SSDParams.c SSDParams.h
 	rm -rf GenSSDTile $(SSD_MODEL_GEN_CLEAN)
 
-clean_all: clean clean_model #clean_train
-
+clean_all: clean clean_model 
 
 .PHONY: clean_all
 

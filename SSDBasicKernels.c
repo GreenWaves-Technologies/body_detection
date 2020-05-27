@@ -94,37 +94,28 @@ static unsigned int Exp_fp_17_15(unsigned int X)
     if (!X) return 0x8000;
     Y = Abs(X);
     IntX = (Y >> 15);
-    if (IntX >= (int) ARRAYSIZE (IntegerExpLUT))
-    {
-        if (Y == X) return 0x7FFFFFFF;
-        else return 0;
+    if (IntX >= (int) ARRAYSIZE (IntegerExpLUT)) {
+        if (Y==X) return 0x7FFFFFFF; else return 0;
     }
     FractX = (Y & 0x7FFF);
-    if (gap_bitextractu(FractX, 1, 14))
-    {
+    if (gap_bitextractu(FractX, 1, 14)) {
         /* Taylor series converges quickly only when | FractX | < 0.5 */
-        FractX -= 0x8000;
-        IntX++;
+        FractX -= 0x8000; IntX++;
     }
-    ScaledInt = IntegerExpLUT[IntX];
-    ScaledFract = FractionExpLUT[IntX];
+    ScaledInt = IntegerExpLUT[IntX]; ScaledFract = FractionExpLUT[IntX];
     /* Taylor's series: exp(x) = 1 + x + x ^ 2 / 2 + x ^ 3 / 3! + x ^ 4 / 4! + x ^ 5 / 5! + x ^ 6 / 6! + x ^ 7 / 7! + x ^ 8 / 8!  */
-    FractX_s = FractX;
-    Z_s = FractX;
-    Result = 0;
-    for (unsigned int i = 1; i < ARRAYSIZE (ExpCoeffLUT); i++)
-    {
-        Result += Z_s * ExpCoeffLUT[i]; // gap8_macs(Result, Z, ExpCoeffLUT[ i ]);
+    FractX_s = FractX; Z_s = FractX; Result = 0;
+    for (int i = 1; i < ARRAYSIZE (ExpCoeffLUT); i++) {
+        Result += Z_s*ExpCoeffLUT[i]; // gap_macs(Result, Z, ExpCoeffLUT[ i ]);
         Z_s = gap_mulsRN(Z_s, FractX_s, 15);
     }
     Result = gap_roundnorm(Result, 15) + ExpCoeffLUT[0];
     unsigned short int U_Res = Result;
     Result = gap_muluRN(U_Res, ScaledFract, 15) + U_Res * ScaledInt;
-    if (Result && (X > 0x7FFFFFFF))
+    if (Result && (X > 0x7FFFFFFF)) 
         Result = ((0x7FFFFFFF / Result) >> 1);      /* negative value */
     return (unsigned int) Result;
 }
-
 //Output and input can be the same buffer
 void SoftMax_fp16(
     short int *in_buffer,
@@ -250,7 +241,6 @@ void KerEstimate_bbox(int index,int global_index,int confidence, short int *Boxe
     
     bbxs->bbs[bbxs->num_bb].class   = class;
     bbxs->bbs[bbxs->num_bb++].score = confidence;
-
 
     //printf("\n");
 }

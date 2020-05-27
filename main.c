@@ -17,12 +17,7 @@
 #include "pmsis.h"
 #include "bsp/display/ili9341.h"
 #include "bsp/camera/himax.h"
-
-#ifdef __EMUL__
-#ifdef PERF
-#undef PERF
-#endif
-#endif
+#include "body_detectionInfo.h"
 
 #if SILENT
 #define PRINTF(...) ((void) 0)
@@ -36,7 +31,7 @@ struct pi_device device;
 static pi_buffer_t buffer;
 
 //TODO: how what are these parameters
-#define STACK_SIZE           2*1024 //This is for PE0   (Master)
+#define STACK_SIZE           4*1024 //This is for PE0   (Master)
 #define SLAVE_STACK_SIZE     1024 //This is for PE1-7 (Slaves)
 #define MOUNT           1
 #define UNMOUNT         0
@@ -47,36 +42,18 @@ static struct pi_hyperram_conf conf;
 
 AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 
-#ifdef __EMUL__
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/param.h>
-#include <string.h>
-#include "helpers/helpers.h"
-//To be integrated in AT Header
-
-#ifndef TENSOR_DUMP_FILE
-#define TENSOR_DUMP_FILE "tensor_dump_file.dat"
-#endif
-#endif
-
 #define FIX2FP(Val, Precision)    ((float) (Val) / (float) (1<<(Precision)))
 
-//static short int *L2_Output_1, L2_Output_2, L2_Output_3, L2_Output_4, L2_Output_5, L2_Output_6, L2_Output_7, L2_Output_8;
-//PI_L2 short int *L2_Output_1, *L2_Output_2, *L2_Output_3, *L2_Output_4, *L2_Output_5, *L2_Output_6, *L2_Output_7, *L2_Output_8;
+#define INPUT_1_Q S0_Op_input_1_Q
 
-#define INPUT_1_Q 15
-
-#define OUTPUT_1_Q 13
-#define OUTPUT_5_Q 11
-#define OUTPUT_2_Q 12
-#define OUTPUT_6_Q 12
-#define OUTPUT_3_Q 13
-#define OUTPUT_7_Q 12
-#define OUTPUT_4_Q 13
-#define OUTPUT_8_Q 12
+#define OUTPUT_1_Q S10_Op_output_1_Q
+#define OUTPUT_5_Q S12_Op_output_5_Q
+#define OUTPUT_2_Q S19_Op_output_2_Q
+#define OUTPUT_6_Q S21_Op_output_6_Q
+#define OUTPUT_3_Q S28_Op_output_3_Q
+#define OUTPUT_7_Q S30_Op_output_7_Q
+#define OUTPUT_4_Q S37_Op_output_4_Q
+#define OUTPUT_8_Q S39_Op_output_8_Q 
 
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
 
@@ -294,8 +271,6 @@ static void RunSSD()
         }
     }while(changed);
 
-    //The signature of the function should be changed because the input image is not square
-    //TODO!!!!!!
     convertCoordBboxes(&bbxs,160,120); 
     non_max_suppress(&bbxs);
 
@@ -391,6 +366,9 @@ int main()
     char *ImageName = "../../../test_samples/img_OUT0.pgm";
     //char *ImageName = "../../../samples/test_people.pgm";
     
+    //#ifdef DEBUG_NN
+    //dt_open_dump_file("dt_tensor.dat");
+    //#endif
 
 #endif
     unsigned int Wi, Hi;
@@ -402,7 +380,7 @@ int main()
     PRINTF("Entering main controller\n");
 
     if (rt_event_alloc(NULL, 16)) return -1;
-    pi_freq_set(PI_FREQ_DOMAIN_FC,150000000);
+    pi_freq_set(PI_FREQ_DOMAIN_FC,50000000);
 
 #ifdef FROM_CAMERA
 
@@ -468,13 +446,13 @@ int main()
 
     for (int i = W * H - 1; i >= 0; i--)
     {
-        ImageIn[i] = ImageInChar[i] << INPUT_1_Q-8; //Input is Q14
+        ImageIn[i] = (int16_t)ImageInChar[i] << INPUT_1_Q-8; //Input is naturally Q8
     }
 
     #else
     for (int i = W * H - 1; i >= 0; i--)
     {
-        ImageIn[i] = inImage[i] << INPUT_1_Q-8; //Input is Q14
+        ImageIn[i] = (int16_t)inImage[i] << INPUT_1_Q-8; //Input is naturally Q8
     }
     #endif
 #endif
@@ -544,7 +522,7 @@ int main()
     
     int iter=1;
 
-    pi_freq_set(PI_FREQ_DOMAIN_CL,175000000);
+    pi_freq_set(PI_FREQ_DOMAIN_CL,50000000);
 
     while(iter){
 
@@ -579,7 +557,7 @@ int main()
         pi_cluster_send_task_to_cl(&cluster_dev, task);
         #ifndef FROM_CAMERA
         {
-            unsigned int TotalCycles = 0, TotalOper = 0;
+/*            unsigned int TotalCycles = 0, TotalOper = 0;
             printf("\n");
             for (unsigned int i=0; i<(sizeof(NNPerf)/sizeof(unsigned int)); i++)
             {
@@ -589,7 +567,7 @@ int main()
             printf("\n");
             printf("%45s: %10d, Operation: %10d, Operation/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float) TotalOper)/ TotalCycles);
             printf("\n");
-        }
+*/        }
         #endif  /* FROM_CAMERA */
 
         body_detectionCNN_Destruct();

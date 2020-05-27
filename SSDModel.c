@@ -51,7 +51,7 @@ void GenerateSSD3Dto2D(char *Name, int Wi, int Hi, int Fi, int classes, int DoSo
             TCArg("unsigned short", "n_classes")
         ),
         
-        Calls(1, Call("KerSDD3Dto2DShort", LOC_INNER_LOOP,
+        Calls(1, Call("KerSDD3Dto2DShort", LOC_LOOP,
             
             Bindings(8, K_Arg("In", KER_ARG_TILE),
                         K_Arg("In", KER_ARG_TILE_W),
@@ -63,7 +63,7 @@ void GenerateSSD3Dto2D(char *Name, int Wi, int Hi, int Fi, int classes, int DoSo
                         C_Arg("n_classes")
                         ))),
         KerArgs(2,
-            KerArg("In",  KerArgSpace(1,KER_ITER_TILE0),  OBJ_IN_DB_L2DB,  Wi*Hi, Fi, sizeof(short), 0, OBJ_CONSTRAINTS_TILE_VER, 0, "In"),
+            KerArg("In",  KerArgSpace(1,KER_ITER_TILE0), OBJ_IN_DB_L2DB,  Wi*Hi, Fi, sizeof(short), 0, OBJ_CONSTRAINTS_TILE_VER, 0, "In"),
             KerArg("Out", KerArgSpace(1,KER_ITER_TILE0), OBJ_OUT_DB_L2DB, Fi, Wi*Hi,sizeof(short), 0, 0, 0, "Out")
         )
     );
@@ -71,7 +71,6 @@ void GenerateSSD3Dto2D(char *Name, int Wi, int Hi, int Fi, int classes, int DoSo
 
 void GeneratePredecoder(char *Name, int FeaturesMap_W, int FeaturesMap_H, int n_ancors, int offsets,int classes)
 {   
-
     //Classes can be used to contrain the input
     UserKernel(Name,
         KernelIterSpace(1, IterTiledSpace(KER_ITER_TILE0)),
@@ -83,8 +82,8 @@ void GeneratePredecoder(char *Name, int FeaturesMap_W, int FeaturesMap_H, int n_
             TCArg("void  *", "BoundingBoxes"),
             TCArg("int"    , "Boxes_Q")
         ),
-
-        Calls(1, Call("KerPredecoderShort", LOC_INNER_LOOP,
+    
+        Calls(1, Call("KerPredecoderShort", LOC_LOOP,
             Bindings(10, K_Arg("Classes",    KER_ARG_TILE),
                         K_Arg("Boxes",      KER_ARG_TILE),
                         K_Arg("Classes",    KER_ARG_TILE_W),
