@@ -31,7 +31,7 @@ struct pi_device device;
 static pi_buffer_t buffer;
 
 //TODO: how what are these parameters
-#define STACK_SIZE           4*1024 //This is for PE0   (Master)
+#define STACK_SIZE           2*1024 //This is for PE0   (Master)
 #define SLAVE_STACK_SIZE     1024 //This is for PE1-7 (Slaves)
 #define MOUNT           1
 #define UNMOUNT         0
