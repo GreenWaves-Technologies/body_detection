@@ -32,7 +32,7 @@ static pi_buffer_t buffer;
 
 //TODO: how what are these parameters
 #define STACK_SIZE           2*1024 //This is for PE0   (Master)
-#define SLAVE_STACK_SIZE     1024 //This is for PE1-7 (Slaves)
+#define SLAVE_STACK_SIZE     2*1024 //This is for PE1-7 (Slaves)
 #define MOUNT           1
 #define UNMOUNT         0
 #define CID             0
@@ -76,18 +76,11 @@ short int * Output_6;
 short int * Output_7; 
 short int * Output_8;
 
-#ifdef __EMUL__
-PI_L2 bboxs_fp_t bbxs;
-#else
 PI_L2 bboxs_t bbxs;
-#endif
+
 static int initSSD(){
 
-    #ifdef __EMUL__
-    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_fp_t)*MAX_BB);
-    #else
     bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_t)*MAX_BB);
-    #endif
 
     if(bbxs.bbs==NULL){
         printf("Bounding Boxes Allocation Error...\n");
@@ -95,7 +88,6 @@ static int initSSD(){
     }
 
     bbxs.num_bb = 0;
-
 
     initAnchorLayer_1();
     initAnchorLayer_2();
@@ -349,28 +341,11 @@ int checkResults(bboxs_t *boundbxs){
 }
 
 
-#ifdef __EMUL__
-int main(int argc, char *argv[])
-{
 
-	if (argc < 2)
-    {
-        printf("Usage: mnist [image_file]\n");
-        exit(1);
-    }
-    char *ImageName = argv[1];
-#else
-
-int main()
+int start()
 {
     char *ImageName = "../../../test_samples/img_OUT0.pgm";
-    //char *ImageName = "../../../samples/test_people.pgm";
-    
-    //#ifdef DEBUG_NN
-    //dt_open_dump_file("dt_tensor.dat");
-    //#endif
 
-#endif
     unsigned int Wi, Hi;
     //Input image size
     unsigned int W = 160, H = 120;
@@ -379,7 +354,6 @@ int main()
 
     PRINTF("Entering main controller\n");
 
-    if (rt_event_alloc(NULL, 16)) return -1;
     pi_freq_set(PI_FREQ_DOMAIN_FC,50000000);
 
 #ifdef FROM_CAMERA
@@ -420,7 +394,7 @@ int main()
     }
 
 
-#else
+#else //reading image from host pc
 
     unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( W * H * sizeof(MNIST_IMAGE_IN_T));
     if (ImageInChar == 0)
@@ -429,7 +403,6 @@ int main()
         pmsis_exit(-6);
     }
 
-    #ifndef NO_BRIDGE
     //Reading Image from Bridge
     PRINTF("Loading Image from File\n");
     if ((ReadImageFromFile(ImageName, &Wi, &Hi, ImageInChar, W * H * sizeof(unsigned char)) == 0) || (Wi != W) || (Hi != H))
@@ -437,24 +410,14 @@ int main()
         printf("Failed to load image %s or dimension mismatch Expects [%dx%d], Got [%dx%d]\n", ImageName, W, H, Wi, Hi);
         pmsis_exit(-6);
     }
-    #endif
 
     ImageIn = (MNIST_IMAGE_IN_T *)ImageInChar;
-
-
-    #ifndef NO_BRIDGE
 
     for (int i = W * H - 1; i >= 0; i--)
     {
         ImageIn[i] = (int16_t)ImageInChar[i] << INPUT_1_Q-8; //Input is naturally Q8
     }
 
-    #else
-    for (int i = W * H - 1; i >= 0; i--)
-    {
-        ImageIn[i] = (int16_t)inImage[i] << INPUT_1_Q-8; //Input is naturally Q8
-    }
-    #endif
 #endif
 
 
@@ -536,7 +499,7 @@ int main()
             int Yoffset = (Hcam - 120)/2;
             for(int y=0;y<120;y++){
                 for(int x=0;x<160;x++){
-                    ImageIn[y*160+x] = ((short int)ImageInChar[((y+Yoffset)*Wcam)+(x+Xoffset)]) << 6;
+                    ImageIn[y*160+x] = ((short int)ImageInChar[((y+Yoffset)*Wcam)+(x+Xoffset)]) << S0_Op_input_1_Q-8;
                 }
             }
         #endif
@@ -553,22 +516,21 @@ int main()
         task->stack_size = (uint32_t) STACK_SIZE;
         task->slave_stack_size = (uint32_t) SLAVE_STACK_SIZE;
     
-
+        write_dump_location=0;
         pi_cluster_send_task_to_cl(&cluster_dev, task);
-        #ifndef FROM_CAMERA
+        #ifdef NN_PERF
         {
-/*            unsigned int TotalCycles = 0, TotalOper = 0;
+            unsigned int TotalCycles = 0, TotalOper = 0;
             printf("\n");
-            for (unsigned int i=0; i<(sizeof(NNPerf)/sizeof(unsigned int)); i++)
-            {
-                printf("%45s: %10d, Operation: %10d, Operation/Cycle: %f\n", NNLName[i], NNPerf[i], NNOperCount[i], ((float) NNOperCount[i])/ NNPerf[i]);
-                TotalCycles += NNPerf[i]; TotalOper += NNOperCount[i];
+            for (int i=0; i<(sizeof(AT_GraphPerf)/sizeof(unsigned int)); i++) {
+                printf("%45s: Cycles: %10d, Operations: %10d, Operations/Cycle: %f\n", AT_GraphNodeNames[i], AT_GraphPerf[i], AT_GraphOperInfosNames[i], ((float) AT_GraphOperInfosNames[i])/ AT_GraphPerf[i]);
+                TotalCycles += AT_GraphPerf[i]; TotalOper += AT_GraphOperInfosNames[i];
             }
             printf("\n");
-            printf("%45s: %10d, Operation: %10d, Operation/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float) TotalOper)/ TotalCycles);
+            printf("%45s: Cycles: %10d, Operations: %10d, Operations/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float) TotalOper)/ TotalCycles);
             printf("\n");
-*/        }
-        #endif  /* FROM_CAMERA */
+        }
+        #endif  /* NN_PERF */
 
         body_detectionCNN_Destruct();
 
@@ -606,16 +568,8 @@ int main()
         #endif
     }
 
-#ifndef __EMUL__
-    // Close the cluster
     pi_cluster_close(&cluster_dev);
-#endif
 
-
-#ifdef __EMUL__
-    dt_close_dump_file();
-#else
-#endif
 
     PRINTF("Ended\n");
     
@@ -628,6 +582,11 @@ int main()
         return -1;
     }
 
-
     return 0;
+}
+
+
+int main(void)
+{
+  return pmsis_kickoff((void *) start);
 }

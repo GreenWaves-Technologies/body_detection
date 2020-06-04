@@ -70,18 +70,6 @@ clean_model:
 	$(RM) -rf $(MODEL_BUILD)
 	$(RM) *.dat
 
-clean_train:
-	$(RM) -rf $(MODEL_TRAIN_BUILD)
 
-clean_images:
-#	$(RM) -rf $(IMAGES)
 
-test_images: $(IMAGES)
-
-# Dumps weights and outputs for functional tests and validation in tool
-test_files: $(MODEL_TFLITE)
-	python model/run.py $(MODEL_H5) -i ../examples/0/136.pgm -D ../tests/h5_pickles -d
-	python model/run.py $(MODEL_H5) -D ../tests/h5_pickles -w weights.pickle
-	cp $(MODEL_TFLITE) ../examples
-
-.PHONY: model clean_model clean_train test_files test_images clean_images
+.PHONY: model clean_model  

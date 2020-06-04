@@ -64,11 +64,15 @@ endif
 
 include model_decl.mk
 
+MAIN_STACK_SIZE=2048
+
 
 # Here we set the memory allocation for the generated kernels
 # REMEMBER THAT THE L1 MEMORY ALLOCATION MUST INCLUDE SPACE
 # FOR ALLOCATED STACKS!
-
+MODEL_L1_MEMORY=52000
+MODEL_L2_MEMORY=200000
+MODEL_L3_MEMORY=5000000
 # hram - HyperBus RAM
 # qspiram - Quad SPI RAM
 MODEL_L3_EXEC=hram
@@ -76,12 +80,13 @@ MODEL_L3_EXEC=hram
 # qpsiflash - Quad SPI Flash
 MODEL_L3_CONST=hflash
 
+
 pulpChip = GAP
 APP = body_detection
 
 APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_GEN_C) $(CNN_LIB) 
 
-GAP_FLAGS += -g -w -DNORM_ROUND
+GAP_FLAGS += -g -w #-DNORM_ROUND
 GAP_FLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns
 GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD) $(CNN_LIB_INCLUDE)
 
