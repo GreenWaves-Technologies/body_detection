@@ -574,11 +574,11 @@ int start()
     
     if(checkResults(&bbxs)==0){
         printf("Correct results!\n");
-        return 0;
+        pmsis_exit(0);
     }
     else{
         printf("Wrong results!\n");
-        return -1;
+        pmsis_exit(-1);
     }
 
     return 0;
