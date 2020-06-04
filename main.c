@@ -516,7 +516,6 @@ int start()
         task->stack_size = (uint32_t) STACK_SIZE;
         task->slave_stack_size = (uint32_t) SLAVE_STACK_SIZE;
     
-        write_dump_location=0;
         pi_cluster_send_task_to_cl(&cluster_dev, task);
         #ifdef NN_PERF
         {
