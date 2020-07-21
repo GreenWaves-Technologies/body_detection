@@ -86,9 +86,9 @@ APP = body_detection
 
 APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_GEN_C) $(CNN_LIB) 
 
-GAP_FLAGS += -g -w #-DNORM_ROUND
-GAP_FLAGS += -O3 -s -mno-memcpy -fno-tree-loop-distribute-patterns
-GAP_FLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD) $(CNN_LIB_INCLUDE)
+APP_CFLAGS += -g -w #-DNORM_ROUND
+APP_CFLAGS += -O3 -s -mno-memcpy -fno-tree-loop-distribute-patterns
+APP_CFLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD) $(CNN_LIB_INCLUDE)
 
 ifeq ($(SILENT),1)
   APP_CFLAGS += -DSILENT=1
