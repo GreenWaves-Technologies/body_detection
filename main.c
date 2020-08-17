@@ -332,9 +332,9 @@ int checkResults(bboxs_t *boundbxs){
     //Cabled check of result (not nice but effective) with +/- 3 px tollerance
     if(totAliveBB!=1) return -1;
     if( x > 74 + 2 || x < 74 - 2 )         return -1;
-    if( y > 26 + 2 || y < 26 - 2 )         return -1;
+    if( y > 28 + 2 || y < 28 - 2 )         return -1;
     if( w > 24 + 2 || w < 24 - 2 )         return -1;
-    if( h > 73 + 2 || h < 73 - 2 )         return -1;
+    if( h > 71 + 2 || h < 71 - 2 )         return -1;
 
     return 0;
 
