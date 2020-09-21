@@ -352,7 +352,7 @@ int start()
 
     PRINTF("Entering main controller\n");
 
-    pi_freq_set(PI_FREQ_DOMAIN_FC,FREQ_FC);
+    pi_freq_set(PI_FREQ_DOMAIN_FC,FREQ_FC*1000*1000);
 
 #ifdef FROM_CAMERA
 
@@ -483,7 +483,7 @@ int start()
     
     int iter=1;
 
-    pi_freq_set(PI_FREQ_DOMAIN_CL,FREQ_CL);
+    pi_freq_set(PI_FREQ_DOMAIN_CL,FREQ_CL*1000*1000);
 
     while(iter){
 
