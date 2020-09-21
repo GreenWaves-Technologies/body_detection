@@ -348,7 +348,7 @@ int start()
     //Input image size
     unsigned int W = 160, H = 120;
     unsigned int Wcam=324, Hcam=244;
-
+    int ret_state;
 
     PRINTF("Entering main controller\n");
 
@@ -502,9 +502,9 @@ int start()
             }
         #endif
 
-        if (body_detectionCNN_Construct())
+        if (ret_state=body_detectionCNN_Construct())
         {
-            printf("Graph constructor exited with an error\n");
+            printf("Graph constructor exited with an error code: %d\n",ret_state);
             pmsis_exit(-4);
         }
 
