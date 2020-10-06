@@ -143,14 +143,15 @@ SSD_MODEL_GEN_CLEAN = $(SSD_MODEL_GEN_C) $(addsuffix .h, $(SSD_MODEL_GEN))
 GenSSDTile: SSDModel.c
 	gcc -g -o GenSSDTile -I"$(TILER_INC)" SSDModel.c $(TILER_LIB)
 
-$(SSD_MODEL_GEN_C): GenSSDTile
+$(SSD_MODEL_GEN_C): GenSSDTile 
 	./GenSSDTile
 
-SSD_model: $(SSD_MODEL_GEN_C)
+SSDParams.c: $(SSD_MODEL_GEN_C)
 	cd SSDParamsGenerator && $(MAKE) all run
 
-#################
+SSD_model: SSDParams.c
 
+#################
 
 # all depends on the model
 all:: SSD_model model

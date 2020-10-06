@@ -352,8 +352,10 @@ int start()
 
     PRINTF("Entering main controller\n");
 
+    //Workaround for Gap9 Regression, waiting for sdk fix
+    #if !FREQ_FC==50
     pi_freq_set(PI_FREQ_DOMAIN_FC,FREQ_FC*1000*1000);
-
+    #endif
 #ifdef FROM_CAMERA
 
     unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( Wcam * Hcam * sizeof(unsigned char));
