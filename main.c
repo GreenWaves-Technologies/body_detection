@@ -44,14 +44,14 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 
 #define INPUT_1_Q S0_Op_input_1_Q
 
-#define OUTPUT_1_Q S10_Op_output_1_Q
-#define OUTPUT_5_Q S12_Op_output_5_Q
-#define OUTPUT_2_Q S19_Op_output_2_Q
-#define OUTPUT_6_Q S21_Op_output_6_Q
-#define OUTPUT_3_Q S28_Op_output_3_Q
-#define OUTPUT_7_Q S30_Op_output_7_Q
-#define OUTPUT_4_Q S37_Op_output_4_Q
-#define OUTPUT_8_Q S39_Op_output_8_Q 
+#define OUTPUT_1_Q S29_Op_output_1_Q
+#define OUTPUT_5_Q S33_Op_output_5_Q
+#define OUTPUT_2_Q S73_Op_output_2_Q
+#define OUTPUT_6_Q S75_Op_output_6_Q
+#define OUTPUT_3_Q S83_Op_output_3_Q
+#define OUTPUT_7_Q S85_Op_output_7_Q
+#define OUTPUT_4_Q S93_Op_output_4_Q
+#define OUTPUT_8_Q S95_Op_output_8_Q 
 
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
 
@@ -352,8 +352,10 @@ int start()
 
     PRINTF("Entering main controller\n");
 
+    //Workaround for Gap9 Regression, waiting for sdk fix
+    #if !FREQ_FC==50
     pi_freq_set(PI_FREQ_DOMAIN_FC,FREQ_FC*1000*1000);
-
+    #endif
 #ifdef FROM_CAMERA
 
     unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( Wcam * Hcam * sizeof(unsigned char));
