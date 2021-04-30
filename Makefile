@@ -28,19 +28,6 @@ endif
 
 $(info Building GAP8 mode with $(QUANTIZATION_BITS) bit quantization)
 
-#MODEL_SQ8=1
-ifdef MODEL_SQ8
-  CNN_GEN = $(MODEL_GEN_SQ8)
-  CNN_GEN_INCLUDE = $(MODEL_GEN_INCLUDE_SQ8)
-  CNN_LIB = $(MODEL_LIB_SQ8)
-  CNN_LIB_INCLUDE = $(MODEL_LIB_INCLUDE_SQ8)
-else
-  CNN_GEN = $(MODEL_GEN_POW2) 
-  CNN_GEN_INCLUDE = $(MODEL_GEN_INCLUDE_POW2)
-  CNN_LIB = $(MODEL_LIB_POW2)
-  CNN_LIB_INCLUDE = $(MODEL_LIB_INCLUDE_POW2)
-endif
-
 # For debugging don't load an image
 # Run the network with zeros
 #NO_IMAGE=1
