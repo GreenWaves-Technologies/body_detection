@@ -85,7 +85,7 @@ static int initSSD(){
         return 1;
     }
 
-    bbxs.num_bb = 0;
+    bbxs.num_bb = 0;    
 
     initAnchorLayer_1();
     initAnchorLayer_2();
@@ -100,14 +100,14 @@ static int initSSD(){
 void convertCoordBboxes(bboxs_t *boundbxs,float scale_x,float scale_y){
 
     for (int counter=0;counter< boundbxs->num_bb;counter++){
-        //Set Alive for non max this should be done somewhere else
-        boundbxs->bbs[counter].alive=1;
-        boundbxs->bbs[counter].x = (int)(FIX2FP(boundbxs->bbs[counter].x,20) * scale_x);
-        boundbxs->bbs[counter].y = (int)(FIX2FP(boundbxs->bbs[counter].y,20) * scale_y);
-        boundbxs->bbs[counter].w = (int)(FIX2FP(boundbxs->bbs[counter].w,26) * scale_x);
-        boundbxs->bbs[counter].h = (int)(FIX2FP(boundbxs->bbs[counter].h,26) * scale_y);
-        boundbxs->bbs[counter].x = boundbxs->bbs[counter].x - (boundbxs->bbs[counter].w/2);
-        boundbxs->bbs[counter].y = boundbxs->bbs[counter].y - (boundbxs->bbs[counter].h/2);
+        if(boundbxs->bbs[counter].alive==1){
+            boundbxs->bbs[counter].x = (int)(FIX2FP(boundbxs->bbs[counter].x,20) * scale_x);
+            boundbxs->bbs[counter].y = (int)(FIX2FP(boundbxs->bbs[counter].y,20) * scale_y);
+            boundbxs->bbs[counter].w = (int)(FIX2FP(boundbxs->bbs[counter].w,26) * scale_x);
+            boundbxs->bbs[counter].h = (int)(FIX2FP(boundbxs->bbs[counter].h,26) * scale_y);
+            boundbxs->bbs[counter].x = boundbxs->bbs[counter].x - (boundbxs->bbs[counter].w/2);
+            boundbxs->bbs[counter].y = boundbxs->bbs[counter].y - (boundbxs->bbs[counter].h/2);
+        }
     }
 }
 
@@ -228,6 +228,10 @@ static void RunSSD()
 
     //Set Boundinx Boxes to 0
     bbxs.num_bb = 0;
+    for (int counter=0;counter< MAX_BB;counter++){
+        bbxs.bbs[counter].alive==0;
+    }
+
     
     SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,OUTPUT_1_Q,2);
     SDD3Dto2D_80_60_24(Output_5,tmp_buffer_boxes,0,0);
@@ -352,10 +356,8 @@ int start()
 
     PRINTF("Entering main controller\n");
 
-    //Workaround for Gap9 Regression, waiting for sdk fix
-    #if !FREQ_FC==50
     pi_freq_set(PI_FREQ_DOMAIN_FC,FREQ_FC*1000*1000);
-    #endif
+
 #ifdef FROM_CAMERA
 
     unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( Wcam * Hcam * sizeof(unsigned char));

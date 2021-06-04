@@ -240,6 +240,7 @@ void KerEstimate_bbox(int index,int global_index,int confidence, short int *Boxe
     //printf("exp mult: %f\n",FIX2FP(bbxs->bbs[bbxs->num_bb].h,26));
     
     bbxs->bbs[bbxs->num_bb].class   = class;
+    bbxs->bbs[bbxs->num_bb].alive   = 1;
     bbxs->bbs[bbxs->num_bb++].score = confidence;
 
     //printf("\n");

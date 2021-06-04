@@ -12,6 +12,24 @@ set graph_produce_operinfos true
 set graph_monitor_cycles true
 set graph_const_exec_from_flash true
 #nodeoption 4 PARALLELFEATURES 0
+##This is to print a NN node
+## From AT
+##CONSTANT_IN = 1,
+##AT_DUMP_IN = 2,
+##AT_DUMP_OUT = 4,
+##Values are binary combined so can be used 3 for CONSTANT_IN and IN.
+##If no node is specified option will be applied for all nodes
+#set graph_dump_tensor 4
+#set graph_dump_one_node S95_Conv2d_28x16x3x3
+#set graph_dump_one_node S93_Conv2d_14x16x3x3
+#set graph_dump_one_node S85_Conv2d_32x16x3x3
+#set graph_dump_one_node S83_Conv2d_16x16x3x3
+#set graph_dump_one_node S75_Conv2d_28x16x3x3
+#set graph_dump_one_node S73_Conv2d_14x16x3x3
+#set graph_dump_one_node S33_Conv2d_24x16x3x3
+#set graph_dump_one_node S29_Conv2d_12x16x3x3
+#set graph_trace_exec true
+#set graph_checksum 1
 ##################################################
 ## These two lines are for dumping NN tensors
 #set graph_trace_exec true
