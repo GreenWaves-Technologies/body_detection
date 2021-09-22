@@ -20,7 +20,7 @@ variants:
            - pulpos
            - freertos
         flags: ~
-   gap9:
+    gap9:
         name: standard
         tags:
             - integration
