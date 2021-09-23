@@ -25,5 +25,7 @@ variants:
         tags:
             - integration
             - release
+        os: 
+           - pulpos
         duration: standard
         flags: ~
