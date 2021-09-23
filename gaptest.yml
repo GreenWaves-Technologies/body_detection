@@ -19,6 +19,8 @@ variants:
         os: 
            - pulpos
            - freertos
+        chips:
+            - gap8
         flags: ~
     gap9:
         name: standard
@@ -27,5 +29,7 @@ variants:
             - release
         os: 
            - pulpos
+        chips:
+            - gap9
         duration: standard
         flags: ~
