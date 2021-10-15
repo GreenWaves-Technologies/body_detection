@@ -42,16 +42,16 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 
 #define FIX2FP(Val, Precision)    ((float) (Val) / (float) (1<<(Precision)))
 
-#define INPUT_1_Q S0_Op_input_1_Q
+#define INPUT_1_Q body_detection_Input_1_Q
 
-#define OUTPUT_1_Q S30_Op_output_1_Q
-#define OUTPUT_5_Q S34_Op_output_5_Q
-#define OUTPUT_2_Q S74_Op_output_2_Q
-#define OUTPUT_6_Q S76_Op_output_6_Q
-#define OUTPUT_3_Q S84_Op_output_3_Q
-#define OUTPUT_7_Q S86_Op_output_7_Q
-#define OUTPUT_4_Q S94_Op_output_4_Q
-#define OUTPUT_8_Q S96_Op_output_8_Q 
+#define OUTPUT_1_Q body_detection_Output_1_Q
+#define OUTPUT_5_Q body_detection_Output_5_Q
+#define OUTPUT_2_Q body_detection_Output_2_Q
+#define OUTPUT_6_Q body_detection_Output_6_Q
+#define OUTPUT_3_Q body_detection_Output_3_Q
+#define OUTPUT_7_Q body_detection_Output_7_Q
+#define OUTPUT_4_Q body_detection_Output_4_Q
+#define OUTPUT_8_Q body_detection_Output_8_Q 
 
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
 
