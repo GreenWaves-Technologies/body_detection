@@ -208,7 +208,7 @@ static void RunNN()
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
 
-    body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
+    body_detectionCNN(ImageIn, Output_1, Output_5, Output_2, Output_6, Output_3, Output_7, Output_4, Output_8);
 
     ti_nn = gap_cl_readhwtimer()-ti;
     PRINTF("Cycles NN : %10d\n",ti_nn);
