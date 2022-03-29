@@ -4,7 +4,7 @@ set input_divisor 256
 set input_offset 0
 set l3_ram_ext_managed True
 set l2_ram_ext_managed False
-aquant -s POW2 -f 16 test_samples/*.pgm
+aquant -s POW2 -f 16 test_samples/*.pgm -H 120 -W 160
 set default_output_exec_location "AT_MEM_L3_HRAM"
 set graph_reorder_constant_in true
 set graph_produce_node_names true
