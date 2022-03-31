@@ -45,12 +45,12 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 #define INPUT_1_Q body_detection_Input_1_Q
 
 #define OUTPUT_1_Q body_detection_Output_1_Q
-#define OUTPUT_5_Q body_detection_Output_5_Q
 #define OUTPUT_2_Q body_detection_Output_2_Q
-#define OUTPUT_6_Q body_detection_Output_6_Q
 #define OUTPUT_3_Q body_detection_Output_3_Q
-#define OUTPUT_7_Q body_detection_Output_7_Q
 #define OUTPUT_4_Q body_detection_Output_4_Q
+#define OUTPUT_5_Q body_detection_Output_5_Q
+#define OUTPUT_6_Q body_detection_Output_6_Q
+#define OUTPUT_7_Q body_detection_Output_7_Q
 #define OUTPUT_8_Q body_detection_Output_8_Q 
 
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
@@ -208,7 +208,7 @@ static void RunNN()
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
 
-    body_detectionCNN(ImageIn, Output_1, Output_5, Output_2, Output_6, Output_3, Output_7, Output_4, Output_8);
+    body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
     ti_nn = gap_cl_readhwtimer()-ti;
     PRINTF("Cycles NN : %10d\n",ti_nn);
