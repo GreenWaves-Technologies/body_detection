@@ -51,7 +51,7 @@ AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 #define OUTPUT_5_Q body_detection_Output_5_Q
 #define OUTPUT_6_Q body_detection_Output_6_Q
 #define OUTPUT_7_Q body_detection_Output_7_Q
-#define OUTPUT_8_Q body_detection_Output_8_Q 
+#define OUTPUT_8_Q body_detection_Output_8_Q
 
 PI_L2 short int *tmp_buffer_classes, *tmp_buffer_boxes;
 
@@ -65,13 +65,13 @@ extern PI_L2 Alps * anchor_layer_3;
 extern PI_L2 Alps * anchor_layer_4;
 
 
-short int * Output_1; 
-short int * Output_2; 
-short int * Output_3; 
-short int * Output_4; 
-short int * Output_5; 
-short int * Output_6; 
-short int * Output_7; 
+short int * Output_1;
+short int * Output_2;
+short int * Output_3;
+short int * Output_4;
+short int * Output_5;
+short int * Output_6;
+short int * Output_7;
 short int * Output_8;
 
 PI_L2 bboxs_t bbxs;
@@ -85,7 +85,7 @@ static int initSSD(){
         return 1;
     }
 
-    bbxs.num_bb = 0;    
+    bbxs.num_bb = 0;
 
     initAnchorLayer_1();
     initAnchorLayer_2();
@@ -164,7 +164,7 @@ int rect_intersect_area( short a_x, short a_y, short a_w, short a_h,
     if(size_x <=0 || size_x <=0)
         return 0;
     else
-        return size_x*size_y; 
+        return size_x*size_y;
 
     #undef MAX
     #undef MIN
@@ -180,7 +180,7 @@ void non_max_suppress(bboxs_t * boundbxs){
         //check if rect has been removed (-1)
         if(boundbxs->bbs[idx].alive==0)
             continue;
- 
+
         for(idx_int=0;idx_int<boundbxs->num_bb;idx_int++){
 
             if(boundbxs->bbs[idx_int].alive==0 || idx_int==idx)
@@ -232,7 +232,7 @@ static void RunSSD()
         bbxs.bbs[counter].alive==0;
     }
 
-    
+
     SDD3Dto2DSoftmax_80_60_12(Output_1,tmp_buffer_classes,OUTPUT_1_Q,2);
     SDD3Dto2D_80_60_24(Output_5,tmp_buffer_boxes,0,0);
     Predecoder80_60(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_1, &bbxs,OUTPUT_5_Q);
@@ -240,11 +240,11 @@ static void RunSSD()
     SDD3Dto2DSoftmax_40_30_14(Output_2,tmp_buffer_classes,OUTPUT_2_Q,2);
     SDD3Dto2D_40_30_28(Output_6,tmp_buffer_boxes,0,0);
     Predecoder40_30(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_2, &bbxs,OUTPUT_6_Q);
-    
+
     SDD3Dto2DSoftmax_20_15_16(Output_3,tmp_buffer_classes,OUTPUT_3_Q,2);
     SDD3Dto2D_20_15_32(Output_7,tmp_buffer_boxes,0,0);
     Predecoder20_15(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_3,&bbxs,OUTPUT_7_Q);
-    
+
     SDD3Dto2DSoftmax_10_7_14(Output_4,tmp_buffer_classes,OUTPUT_4_Q,2);
     SDD3Dto2D_10_7_28(Output_8,tmp_buffer_boxes,0,0);
     Predecoder10_7(tmp_buffer_classes, tmp_buffer_boxes, anchor_layer_4, &bbxs,OUTPUT_8_Q);
@@ -265,14 +265,14 @@ static void RunSSD()
         }
     }while(changed);
 
-    convertCoordBboxes(&bbxs,160,120); 
+    convertCoordBboxes(&bbxs,160,120);
     non_max_suppress(&bbxs);
 
     ti_ssd = gap_cl_readhwtimer()-ti;
 
     printBboxes(&bbxs);
     printBboxes_forPython(&bbxs);
-    
+
     PRINTF("Cycles SSD: %10d\n",ti_ssd);
 
 }
@@ -436,7 +436,7 @@ int start()
     pi_ram_alloc(&HyperRam, &Output_2, 30 * 40* 14 * sizeof(short int));
     pi_ram_alloc(&HyperRam, &Output_3, 15 * 20* 16 * sizeof(short int));
     pi_ram_alloc(&HyperRam, &Output_4, 7  * 10* 14 * sizeof(short int));
-    
+
     pi_ram_alloc(&HyperRam, &Output_5, 60 * 80* 24 * sizeof(short int));
     pi_ram_alloc(&HyperRam, &Output_6, 30 * 40* 28 * sizeof(short int));
     pi_ram_alloc(&HyperRam, &Output_7, 15 * 20* 32 * sizeof(short int));
@@ -461,6 +461,7 @@ int start()
     /* Configure And open cluster. */
     struct pi_device cluster_dev;
     struct pi_cluster_conf cl_conf;
+    pi_cluster_conf_init(&cl_conf);
     cl_conf.id = 0;
     pi_open_from_conf(&cluster_dev, (void *) &cl_conf);
     if (pi_cluster_open(&cluster_dev))
@@ -476,7 +477,7 @@ int start()
         printf("NN Init exited with an error\n");
         pmsis_exit(-6);
     }
-    
+
     PRINTF("Running NN\n");
 
     struct pi_cluster_task *task = pmsis_l2_malloc(sizeof(struct pi_cluster_task));
@@ -484,7 +485,7 @@ int start()
         printf("Alloc Error! \n");
         pmsis_exit(-5);
     }
-    
+
     int iter=1;
 
     pi_freq_set(PI_FREQ_DOMAIN_CL,FREQ_CL*1000*1000);
@@ -517,7 +518,7 @@ int start()
         task->arg = (void *) NULL;
         task->stack_size = (uint32_t) CLUSTER_STACK_SIZE;
         task->slave_stack_size = (uint32_t) CLUSTER_SLAVE_STACK_SIZE;
-    
+
         pi_cluster_send_task_to_cl(&cluster_dev, task);
         #ifdef NN_PERF
         {
@@ -573,7 +574,7 @@ int start()
 
 
     PRINTF("Ended\n");
-    
+
     if(checkResults(&bbxs)==0){
         printf("Correct results!\n");
         pmsis_exit(0);
