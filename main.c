@@ -463,6 +463,7 @@ int start()
     struct pi_cluster_conf cl_conf;
     pi_cluster_conf_init(&cl_conf);
     cl_conf.id = 0;
+    cl_conf.cc_stack_size = CLUSTER_STACK_SIZE;
     pi_open_from_conf(&cluster_dev, (void *) &cl_conf);
     if (pi_cluster_open(&cluster_dev))
     {
@@ -513,12 +514,8 @@ int start()
             pmsis_exit(-4);
         }
 
-        memset(task, 0, sizeof(struct pi_cluster_task));
-        task->entry = RunNN;
-        task->arg = (void *) NULL;
-        task->stack_size = (uint32_t) CLUSTER_STACK_SIZE;
-        task->slave_stack_size = (uint32_t) CLUSTER_SLAVE_STACK_SIZE;
-
+        pi_cluster_task(task, (void (*)(void *))RunNN, NULL);
+        pi_cluster_task_stacks(task, NULL, CLUSTER_SLAVE_STACK_SIZE);
         pi_cluster_send_task_to_cl(&cluster_dev, task);
         #ifdef NN_PERF
         {
@@ -547,11 +544,8 @@ int start()
         }
 
 
-        memset(task, 0, sizeof(struct pi_cluster_task));
-        task->entry = RunSSD;
-        task->arg = (void *) NULL;
-        task->stack_size = (uint32_t) CLUSTER_STACK_SIZE;
-        task->slave_stack_size = (uint32_t) CLUSTER_SLAVE_STACK_SIZE;
+        pi_cluster_task(task, (void (*)(void *))RunSSD, NULL);
+        pi_cluster_task_stacks(task, NULL, CLUSTER_SLAVE_STACK_SIZE);
         pi_cluster_send_task_to_cl(&cluster_dev, task);
 
         pmsis_l1_malloc_free(SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
