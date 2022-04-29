@@ -11,6 +11,7 @@
 #include <string.h>
 #include "helpers/helpers.h"
 #endif
+#include "Gap.h"
 
 extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash;
 

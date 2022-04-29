@@ -10,7 +10,6 @@
 #include <stdio.h>
 
 #include "setup.h"
-#include "Gap.h"
 #include "body_detectionKernels.h"
 #include "SSDKernels.h"
 #include "SSDParams.h"
