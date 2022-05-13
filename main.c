@@ -34,10 +34,19 @@ static pi_buffer_t buffer;
 #define UNMOUNT         0
 #define CID             0
 
-struct pi_device HyperRam;
-static struct pi_hyperram_conf conf;
 
-AT_HYPERFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
+#if defined(__AT_MEM_L3_OSPIRAM__)
+    #define PI_DEVICE_RAM OspiRam
+#elif defined(__AT_MEM_L3_HRAM__)
+    #define PI_DEVICE_RAM HyperRam
+#else
+#error "no such ram"
+#endif
+
+struct pi_device PI_DEVICE_RAM;
+static struct pi_default_ram_conf conf;
+
+AT_DEFAULTFLASH_FS_EXT_ADDR_TYPE body_detection_L3_Flash = 0;
 
 #define FIX2FP(Val, Precision)    ((float) (Val) / (float) (1<<(Precision)))
 
@@ -423,26 +432,26 @@ int start()
 
 
     /* Init & open ram. */
-    pi_hyperram_conf_init(&conf);
-    pi_open_from_conf(&HyperRam, &conf);
-    if (pi_ram_open(&HyperRam))
+    pi_default_ram_conf_init(&conf);
+    pi_open_from_conf(&PI_DEVICE_RAM, &conf);
+    if (pi_ram_open(&PI_DEVICE_RAM))
     {
         printf("Error ram open !\n");
         pmsis_exit(-5);
     }
 
-    pi_ram_alloc(&HyperRam, &Output_1, 60 * 80* 12 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_2, 30 * 40* 14 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_3, 15 * 20* 16 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_4, 7  * 10* 14 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_1, 60 * 80* 12 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_2, 30 * 40* 14 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_3, 15 * 20* 16 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_4, 7  * 10* 14 * sizeof(short int));
 
-    pi_ram_alloc(&HyperRam, &Output_5, 60 * 80* 24 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_6, 30 * 40* 28 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_7, 15 * 20* 32 * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &Output_8, 7  * 10* 28 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_5, 60 * 80* 24 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_6, 30 * 40* 28 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_7, 15 * 20* 32 * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &Output_8, 7  * 10* 28 * sizeof(short int));
 
-    pi_ram_alloc(&HyperRam, &tmp_buffer_classes, 60 * 80* 12   * sizeof(short int));
-    pi_ram_alloc(&HyperRam, &tmp_buffer_boxes  , 60 * 80* 24   * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &tmp_buffer_classes, 60 * 80* 12   * sizeof(short int));
+    pi_ram_alloc(&PI_DEVICE_RAM, &tmp_buffer_boxes  , 60 * 80* 24   * sizeof(short int));
 
     if(Output_1==NULL || Output_2==NULL || Output_3==NULL || Output_4==NULL || Output_5==NULL || Output_6==NULL || Output_7==NULL || Output_8==NULL )
     {

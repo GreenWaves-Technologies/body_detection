@@ -78,12 +78,27 @@ else
   MODEL_L2_MEMORY=200000
   MODEL_L3_MEMORY=8388608
 endif
+
+ifeq ($(platform),gvsoc)
+  $(info Platform is GVSOC)
+  MODEL_L3_EXEC=AT_MEM_L3_HRAM
+  MODEL_L3_RAM=AT_MEM_L3_HRAM
+  MODEL_L3_FLASH=AT_MEM_L3_HFLASH
+else
+  $(info Platform is GAPUINO)
+  MODEL_L3_EXEC=AT_MEM_L3_OSPIRAM
+  MODEL_L3_RAM=AT_MEM_L3_OSPIRAM
+  MODEL_L3_FLASH=AT_MEM_L3_OSPIFLASH
+endif
 # hram - HyperBus RAM
 # qspiram - Quad SPI RAM
-MODEL_L3_EXEC=hram
+ 
+
 # hflash - HyperBus Flash
 # qpsiflash - Quad SPI Flash
-MODEL_L3_CONST=hflash
+ 
+# MODEL_L3_CONST=AT_MEM_L3_HFLASH
+ 
 
 
 pulpChip = GAP
@@ -96,6 +111,7 @@ APP_CFLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns
 APP_CFLAGS += -I. -I./helpers -I$(TILER_EMU_INC) -I$(TILER_INC) -I$(GEN_PATH) -I$(MODEL_BUILD) $(CNN_LIB_INCLUDE)
 APP_CFLAGS += -DCLUSTER_STACK_SIZE=$(CLUSTER_STACK_SIZE) -DCLUSTER_SLAVE_STACK_SIZE=$(CLUSTER_SLAVE_STACK_SIZE)
 APP_CFLAGS += -DFREQ_CL=$(FREQ_CL) -DFREQ_FC=$(FREQ_FC)
+APP_CFLAGS += -D__$(MODEL_L3_FLASH)__ -D__$(MODEL_L3_RAM)__
 ifeq ($(SILENT),1)
   APP_CFLAGS += -DSILENT=1
 endif
@@ -126,9 +142,10 @@ io=host
 SSD_MODEL_GEN = SSDKernels
 SSD_MODEL_GEN_C = $(addsuffix .c, $(SSD_MODEL_GEN))
 SSD_MODEL_GEN_CLEAN = $(SSD_MODEL_GEN_C) $(addsuffix .h, $(SSD_MODEL_GEN))
+SSD_MODEL_GEN_FLAGS = -DMODEL_L3_RAM=$(MODEL_L3_RAM) -DMODEL_L3_FLASH=$(MODEL_L3_FLASH)
 
 GenSSDTile: SSDModel.c
-	gcc -g -o GenSSDTile -I"$(TILER_INC)" SSDModel.c $(TILER_LIB)
+	gcc -g -o GenSSDTile -I"$(TILER_INC)" $(SSD_MODEL_GEN_FLAGS)  SSDModel.c $(TILER_LIB)
 
 $(SSD_MODEL_GEN_C): GenSSDTile 
 	./GenSSDTile
