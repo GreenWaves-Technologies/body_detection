@@ -209,16 +209,21 @@ void non_max_suppress(bboxs_t * boundbxs){
 
 static void RunNN()
 {
-
+    
     unsigned int ti,ti_nn,ti_ssd;
 
     gap_cl_starttimer();
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
-
+    unsigned long long start = pi_time_get_us();
+    
+    // Run NN kernel and write the results to Output_1-8 in L3 RAM 
     body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
     ti_nn = gap_cl_readhwtimer()-ti;
+    unsigned long long end = pi_time_get_us();
+    
+    PRINTF("Computing time NN: %f ms\n",(float)((float)end-(float)start)/1000);
     PRINTF("Cycles NN : %10d\n",ti_nn);
 }
 
@@ -233,8 +238,9 @@ static void RunSSD()
 
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
+    unsigned long long start = pi_time_get_us();
 
-    //Set Boundinx Boxes to 0
+    //Set Bounding Boxes to 0
     bbxs.num_bb = 0;
     for (int counter=0;counter< MAX_BB;counter++){
         bbxs.bbs[counter].alive==0;
@@ -277,10 +283,12 @@ static void RunSSD()
     non_max_suppress(&bbxs);
 
     ti_ssd = gap_cl_readhwtimer()-ti;
-
+    unsigned long long end = pi_time_get_us();
+    
     printBboxes(&bbxs);
     printBboxes_forPython(&bbxs);
 
+    PRINTF("Computing time SSD: %f ms\n",(float)((float)end-(float)start)/1000);
     PRINTF("Cycles SSD: %10d\n",ti_ssd);
 
 }
@@ -354,7 +362,7 @@ int checkResults(bboxs_t *boundbxs){
 
 int start()
 {
-    char *ImageName = "../../../test_samples/img_OUT0.pgm";
+    char *ImageName = "../../../test_samples/test123.pgm";
 
     unsigned int Wi, Hi;
     //Input image size
@@ -391,7 +399,7 @@ int start()
     buffer.data = ImageInChar;
     buffer.stride = 0;
 
-    // WIth Himax, propertly configure the buffer to skip boarder pixels
+    // With Himax, propertly configure the buffer to skip boarder pixels
     pi_buffer_init(&buffer, PI_BUFFER_TYPE_L2, ImageInChar);
     pi_buffer_set_stride(&buffer, 0);
     pi_buffer_set_format(&buffer, 160, 120, 1, PI_BUFFER_FORMAT_GRAY);
@@ -415,17 +423,23 @@ int start()
 
     //Reading Image from Bridge
     PRINTF("Loading Image from File\n");
-    if ((ReadImageFromFile(ImageName, &Wi, &Hi, ImageInChar, W * H * sizeof(unsigned char)) == 0) || (Wi != W) || (Hi != H))
+    if (ReadImageFromFile(ImageName, &Wi, &Hi, ImageInChar, W * H * sizeof(unsigned char)) == 0)
     {
-        printf("Failed to load image %s or dimension mismatch Expects [%dx%d], Got [%dx%d]\n", ImageName, W, H, Wi, Hi);
+        printf("Failed to load image %s\n", ImageName);
         pmsis_exit(-6);
+    } else if ((Wi != W) || (Hi != H))
+    {
+        printf("Dimension mismatch. Expects [%dx%d], Got [%dx%d]\n", W, H, Wi, Hi);
+        printf("Resizing the image...\n");
+
     }
+    
 
     ImageIn = (MNIST_IMAGE_IN_T *)ImageInChar;
 
     for (int i = W * H - 1; i >= 0; i--)
     {
-        ImageIn[i] = (int16_t)ImageInChar[i] << INPUT_1_Q-8; //Input is naturally Q8
+        ImageIn[i] = (int16_t)ImageInChar[i] << INPUT_1_Q-8; //Input is naturally Q8, now we transform into Q14 (through leftshifting by 6)
     }
 
 #endif
@@ -440,6 +454,7 @@ int start()
         pmsis_exit(-5);
     }
 
+    // Output_1-8, tmp_buffer_classes and tmp_buffer_boxes store the addresses of allocated memories in L3 RAM
     pi_ram_alloc(&PI_DEVICE_RAM, &Output_1, 60 * 80* 12 * sizeof(short int));
     pi_ram_alloc(&PI_DEVICE_RAM, &Output_2, 30 * 40* 14 * sizeof(short int));
     pi_ram_alloc(&PI_DEVICE_RAM, &Output_3, 15 * 20* 16 * sizeof(short int));
@@ -459,14 +474,14 @@ int start()
         pmsis_exit(-7);
     }
 
-    if(tmp_buffer_classes==NULL || tmp_buffer_classes==NULL)
+    if(tmp_buffer_classes==NULL || tmp_buffer_boxes==NULL)
     {
         printf("Error Allocating SSD Temp buffers in L3\n");
         pmsis_exit(-7);
     }
 
     #ifndef __EMUL__
-    /* Configure And open cluster. */
+    /* Configure and open cluster. */
     struct pi_device cluster_dev;
     struct pi_cluster_conf cl_conf;
     pi_cluster_conf_init(&cl_conf);
@@ -504,6 +519,7 @@ int start()
         #ifndef FROM_CAMERA
         iter=0;
         #else
+            // iter=0;  // to test read image
             pi_camera_control(&device, PI_CAMERA_CMD_START, 0);
             pi_camera_capture(&device, ImageInChar, Wcam*Hcam);
             pi_camera_control(&device, PI_CAMERA_CMD_STOP, 0);
@@ -562,7 +578,7 @@ int start()
         #ifdef FROM_CAMERA
         for(int y=0;y<120;y++){
             for(int x=0;x<160;x++){
-                ImageInChar[y*160+x] = (unsigned char)(ImageIn[(y*160)+(x)] >> INPUT_1_Q-8);
+                ImageInChar[y*160+x] = (unsigned char)(ImageIn[(y*160)+(x)] >> INPUT_1_Q-8);  // from Q14 to Q8
             }
         }
         //Draw BBs

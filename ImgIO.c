@@ -179,12 +179,18 @@ unsigned char *ReadImageFromFile(char *ImageName, unsigned int *W, unsigned int 
 		ImagePtr = InBuffer;
 	} else {
 		Allocated = 1;
-		AlignedSize = ALIGN(Size, 2);
-		ImagePtr = (unsigned char *) pmsis_l2_malloc( AlignedSize);
+		// AlignedSize = ALIGN(Size, 2);  // round up to the 3rd bit
+		pmsis_l2_malloc_free(InBuffer, BuffSize);
+		AlignedSize = BuffSize*4;
+		InBuffer = (unsigned char *) pmsis_l2_malloc(AlignedSize);
+		ImagePtr = InBuffer;
+
 	}
 	if (ImagePtr == 0) {
 		printf("Failed to allocate %d bytes for input image\n", AlignedSize); goto Fail;
 	}
+
+	// Read the whole image directly into L2 memory
 	pi_fs_seek(File,HeaderSize);
 	{
 		unsigned char *TargetImg = ImagePtr;
@@ -206,6 +212,7 @@ unsigned char *ReadImageFromFile(char *ImageName, unsigned int *W, unsigned int 
 	printf("Image %s, [W: %d, H: %d], Gray, Size: %d bytes, Loaded sucessfully\n", ImageName, *W, *H, AlignedSize);
 
 	return (ImagePtr);
+
 Fail:
 	if (ImagePtr && Allocated) pmsis_l2_malloc_free(ImagePtr, AlignedSize);
 	pi_fs_close(File);

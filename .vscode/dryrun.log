@@ -1,0 +1,6 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/gwt/gap_sdk/nn_menu/starters/body_detection'
+make: Leaving directory '/home/gwt/gap_sdk/nn_menu/starters/body_detection'
+ 
+Makefile:20: *** Source sourceme in gap_sdk first.  Stop.
+
