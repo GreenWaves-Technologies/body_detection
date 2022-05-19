@@ -362,7 +362,7 @@ int checkResults(bboxs_t *boundbxs){
 
 int start()
 {
-    char *ImageName = "../../../test_samples/test123.pgm";
+    char *ImageName = "../../../test_samples/img_OUT0.pgm";
 
     unsigned int Wi, Hi;
     //Input image size
