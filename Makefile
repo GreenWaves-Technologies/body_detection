@@ -11,6 +11,8 @@
 ## Enable image grub from camera and disaply output to lcd
 #FROM_CAMERA=1
 
+
+
 ## This is used for Jenkins test to use input form .h header file
 # not used in this project
 #NO_BRIDGE=1
@@ -64,8 +66,8 @@ TOTAL_STACK_SIZE=$(shell expr $(CLUSTER_STACK_SIZE) \+ $(CLUSTER_SLAVE_STACK_SIZ
 ifeq ('$(TARGET_CHIP_FAMILY)','GAP9')
   FREQ_CL?=400
   FREQ_FC?=400
-  MODEL_L1_MEMORY=$(shell expr 125000 \- $(TOTAL_STACK_SIZE))
-  MODEL_L2_MEMORY=1300000
+  MODEL_L1_MEMORY=$(shell expr 125000 \- $(TOTAL_STACK_SIZE))  # L1 memory - 125KB
+  MODEL_L2_MEMORY=1300000 # L2 memory - 1.5MB
   MODEL_L3_MEMORY=8388608
 else
   ifeq ('$(TARGET_CHIP)','GAP8_V3')
@@ -180,4 +182,5 @@ clean_all: clean clean_model
 .PHONY: clean_all
 
 include model_rules.mk
-include $(RULES_DIR)/pmsis_rules.mk
+include $(RULES_DIR)/pmsis_rules.mk  # gap_sdk/utils/rules/
+

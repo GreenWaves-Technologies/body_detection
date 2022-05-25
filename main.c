@@ -433,7 +433,6 @@ int start()
         printf("Resizing the image...\n");
 
     }
-    
 
     ImageIn = (MNIST_IMAGE_IN_T *)ImageInChar;
 
@@ -444,15 +443,17 @@ int start()
 
 #endif
 
-
     /* Init & open ram. */
     pi_default_ram_conf_init(&conf);
     pi_open_from_conf(&PI_DEVICE_RAM, &conf);
+
+    printf("open ram\n");
     if (pi_ram_open(&PI_DEVICE_RAM))
     {
         printf("Error ram open !\n");
         pmsis_exit(-5);
     }
+    printf("ram opened\n");
 
     // Output_1-8, tmp_buffer_classes and tmp_buffer_boxes store the addresses of allocated memories in L3 RAM
     pi_ram_alloc(&PI_DEVICE_RAM, &Output_1, 60 * 80* 12 * sizeof(short int));

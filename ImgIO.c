@@ -179,12 +179,8 @@ unsigned char *ReadImageFromFile(char *ImageName, unsigned int *W, unsigned int 
 		ImagePtr = InBuffer;
 	} else {
 		Allocated = 1;
-		// AlignedSize = ALIGN(Size, 2);  // round up to the 3rd bit
-		pmsis_l2_malloc_free(InBuffer, BuffSize);
-		AlignedSize = BuffSize*4;
-		InBuffer = (unsigned char *) pmsis_l2_malloc(AlignedSize);
-		ImagePtr = InBuffer;
-
+		AlignedSize = ALIGN(Size, 2);  // round up to the 3rd bit
+		// ImagePtr = InBuffer;
 	}
 	if (ImagePtr == 0) {
 		printf("Failed to allocate %d bytes for input image\n", AlignedSize); goto Fail;
