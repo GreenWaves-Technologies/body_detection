@@ -170,9 +170,9 @@ static int test_entry() {
     }
 
     // Take and save a photo at every key press
-    uint8_t *charIn = pmsis_l2_malloc(sizeof(uint8_t));
-    buff[0] = pmsis_l2_malloc(BUFF_SIZE);  // in bytes
-    buff[1] = pmsis_l2_malloc(BUFF_SIZE_NN);
+    uint8_t *charIn = pi_l2_malloc(sizeof(uint8_t));
+    buff[0] = pi_l2_malloc(BUFF_SIZE);  // in bytes
+    buff[1] = pi_l2_malloc(BUFF_SIZE_NN);
     uint8_t id = 0;
     
 
@@ -234,10 +234,10 @@ static int test_entry() {
             #endif
         #endif
 
-        // pmsis_l2_malloc_free(charIn, sizeof(uint8_t));
-        // pmsis_l2_malloc_free(buff[0], BUFF_SIZE); 
-        // pmsis_l2_malloc_free(buff[1], BUFF_SIZE_NN);     
-        // pmsis_l2_malloc_free(ImgName, sizeof(uint8_t));  
+        // pi_l2_free(charIn, sizeof(uint8_t));
+        // pi_l2_free(buff[0], BUFF_SIZE); 
+        // pi_l2_free(buff[1], BUFF_SIZE_NN);     
+        // pi_l2_free(ImgName, sizeof(uint8_t));  
     }
     pi_i2c_close(&i2c);
     pi_gpio_pin_write(&gpio_ic_3v3, PI_GPIO_A00, 0);

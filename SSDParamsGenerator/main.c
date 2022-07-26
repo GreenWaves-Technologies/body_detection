@@ -155,7 +155,7 @@ void Generate_anchor_layer_output(FILE * sf, FILE * hf, Alps * anchor_layer,int 
 	fprintf(sf,"int initAnchorLayer_%d(){\n",postFIX);
 
 
-	fprintf(sf,"\tanchor_layer_%d = (Alps*) pmsis_l2_malloc(sizeof(Alps));\n",postFIX);
+	fprintf(sf,"\tanchor_layer_%d = (Alps*) pi_l2_malloc(sizeof(Alps));\n",postFIX);
     fprintf(sf,"\tif(anchor_layer_%d==NULL) return 1;\n",postFIX);
     fprintf(sf,"\tanchor_layer_%d->feature_map_width  = %d;\n",postFIX,anchor_layer->feature_map_width);
     fprintf(sf,"\tanchor_layer_%d->feature_map_height = %d;\n",postFIX,anchor_layer->feature_map_height);

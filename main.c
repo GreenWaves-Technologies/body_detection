@@ -86,7 +86,7 @@ PI_L2 bboxs_t bbxs;
 
 static int initSSD(){
 
-    bbxs.bbs = pmsis_l2_malloc(sizeof(bbox_t)*MAX_BB);
+    bbxs.bbs = pi_l2_malloc(sizeof(bbox_t)*MAX_BB);
 
     if(bbxs.bbs==NULL){
         printf("Bounding Boxes Allocation Error...\n");
@@ -376,7 +376,7 @@ int start()
 
 #ifdef FROM_CAMERA
 
-    unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( Wcam * Hcam * sizeof(unsigned char));
+    unsigned char *ImageInChar = (unsigned char *) pi_l2_malloc( Wcam * Hcam * sizeof(unsigned char));
     if (ImageInChar == 0)
     {
         printf("Failed to allocate Memory for Image (%d bytes)\n", Wcam * Hcam * sizeof(MNIST_IMAGE_IN_T));
@@ -414,7 +414,7 @@ int start()
 
 #else //reading image from host pc
 
-    unsigned char *ImageInChar = (unsigned char *) pmsis_l2_malloc( W * H * sizeof(MNIST_IMAGE_IN_T));
+    unsigned char *ImageInChar = (unsigned char *) pi_l2_malloc( W * H * sizeof(MNIST_IMAGE_IN_T));
     if (ImageInChar == 0)
     {
         printf("Failed to allocate Memory for Image (%d bytes)\n", W * H * sizeof(MNIST_IMAGE_IN_T));
@@ -505,7 +505,7 @@ int start()
 
     PRINTF("Running NN\n");
 
-    struct pi_cluster_task *task = pmsis_l2_malloc(sizeof(struct pi_cluster_task));
+    struct pi_cluster_task *task = pi_l2_malloc(sizeof(struct pi_cluster_task));
     if(task==NULL) {
         printf("Alloc Error! \n");
         pmsis_exit(-5);
@@ -559,8 +559,8 @@ int start()
         body_detectionCNN_Destruct();
 
         //SSD Allocations
-        SSDKernels_L1_Memory = pmsis_l1_malloc(_SSDKernels_L1_Memory_SIZE);
-        SSDKernels_L2_Memory = pmsis_l2_malloc(_SSDKernels_L2_Memory_SIZE);
+        SSDKernels_L1_Memory = pi_l1_malloc(_SSDKernels_L1_Memory_SIZE);
+        SSDKernels_L2_Memory = pi_l2_malloc(_SSDKernels_L2_Memory_SIZE);
 
         if(SSDKernels_L1_Memory==NULL || SSDKernels_L2_Memory==NULL)
         {
@@ -573,8 +573,8 @@ int start()
         pi_cluster_task_stacks(task, NULL, CLUSTER_SLAVE_STACK_SIZE);
         pi_cluster_send_task_to_cl(&cluster_dev, task);
 
-        pmsis_l1_malloc_free(SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
-        pmsis_l2_malloc_free(SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
+        pi_l1_free(SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
+        pi_l2_free(SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
 
         #ifdef FROM_CAMERA
         for(int y=0;y<120;y++){
