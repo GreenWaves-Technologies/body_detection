@@ -574,7 +574,7 @@ int start()
         pi_cluster_send_task_to_cl(&cluster_dev, task);
 
         pi_l1_free(&cluster_dev, SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
-        pi_l2_free(&cluster_dev, SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
+        pi_l2_free(SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
 
         #ifdef FROM_CAMERA
         for(int y=0;y<120;y++){
