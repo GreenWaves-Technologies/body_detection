@@ -209,20 +209,20 @@ void non_max_suppress(bboxs_t * boundbxs){
 
 static void RunNN()
 {
-    
+
     unsigned int ti,ti_nn,ti_ssd;
 
     gap_cl_starttimer();
     gap_cl_resethwtimer();
     ti = gap_cl_readhwtimer();
     unsigned long long start = pi_time_get_us();
-    
-    // Run NN kernel and write the results to Output_1-8 in L3 RAM 
+
+    // Run NN kernel and write the results to Output_1-8 in L3 RAM
     body_detectionCNN(ImageIn, Output_1, Output_2, Output_3, Output_4, Output_5, Output_6, Output_7, Output_8);
 
     ti_nn = gap_cl_readhwtimer()-ti;
     unsigned long long end = pi_time_get_us();
-    
+
     PRINTF("Computing time NN: %f ms\n",(float)((float)end-(float)start)/1000);
     PRINTF("Cycles NN : %10d\n",ti_nn);
 }
@@ -284,7 +284,7 @@ static void RunSSD()
 
     ti_ssd = gap_cl_readhwtimer()-ti;
     unsigned long long end = pi_time_get_us();
-    
+
     printBboxes(&bbxs);
     printBboxes_forPython(&bbxs);
 
@@ -559,8 +559,8 @@ int start()
         body_detectionCNN_Destruct();
 
         //SSD Allocations
-        SSDKernels_L1_Memory = pi_l1_malloc(_SSDKernels_L1_Memory_SIZE);
-        SSDKernels_L2_Memory = pi_l2_malloc(_SSDKernels_L2_Memory_SIZE);
+        SSDKernels_L1_Memory = pi_l1_malloc(&cluster_dev, _SSDKernels_L1_Memory_SIZE);
+        SSDKernels_L2_Memory = pi_l2_malloc(&cluster_dev, _SSDKernels_L2_Memory_SIZE);
 
         if(SSDKernels_L1_Memory==NULL || SSDKernels_L2_Memory==NULL)
         {
@@ -573,8 +573,8 @@ int start()
         pi_cluster_task_stacks(task, NULL, CLUSTER_SLAVE_STACK_SIZE);
         pi_cluster_send_task_to_cl(&cluster_dev, task);
 
-        pi_l1_free(SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
-        pi_l2_free(SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
+        pi_l1_free(&cluster_dev, SSDKernels_L1_Memory,_SSDKernels_L1_Memory_SIZE);
+        pi_l2_free(&cluster_dev, SSDKernels_L2_Memory,_SSDKernels_L2_Memory_SIZE);
 
         #ifdef FROM_CAMERA
         for(int y=0;y<120;y++){
