@@ -560,7 +560,7 @@ int start()
 
         //SSD Allocations
         SSDKernels_L1_Memory = pi_l1_malloc(&cluster_dev, _SSDKernels_L1_Memory_SIZE);
-        SSDKernels_L2_Memory = pi_l2_malloc(&cluster_dev, _SSDKernels_L2_Memory_SIZE);
+        SSDKernels_L2_Memory = pi_l2_malloc(_SSDKernels_L2_Memory_SIZE);
 
         if(SSDKernels_L1_Memory==NULL || SSDKernels_L2_Memory==NULL)
         {
