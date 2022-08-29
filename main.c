@@ -367,7 +367,6 @@ int start()
     unsigned int Wi, Hi;
     //Input image size
     unsigned int W = 160, H = 120;
-    unsigned int Wcam=324, Hcam=244;
     int ret_state;
 
     PRINTF("Entering main controller\n");
@@ -376,6 +375,8 @@ int start()
 
 #ifdef FROM_CAMERA
 
+    int Xoffset = (Wcam - 160)/2;
+    int Yoffset = (Hcam - 120)/2;
     unsigned char *ImageInChar = (unsigned char *) pi_l2_malloc( Wcam * Hcam * sizeof(unsigned char));
     if (ImageInChar == 0)
     {
@@ -384,6 +385,7 @@ int start()
     }
     ImageIn = (MNIST_IMAGE_IN_T *)ImageInChar;
 
+    // open display ili9341
     if (open_display(&ili))
     {
         printf("Failed to open display\n");
@@ -404,12 +406,23 @@ int start()
     pi_buffer_set_stride(&buffer, 0);
     pi_buffer_set_format(&buffer, 160, 120, 1, PI_BUFFER_FORMAT_GRAY);
 
-
+    #ifndef GAP9_EVK
+    // Open himax camera for GAPUINO
     if (open_camera_himax(&device))
     {
         printf("Failed to open camera\n");
         pmsis_exit(-2);
     }
+    #else
+    // Open mipi camera on GAP9_EVK
+    PRINTF("Opening CSI2 camera\n");
+    if (open_camera_csi2())
+    {
+        printf("Failed to open camera!\n");
+        pmsis_exit(-1);
+    }
+    #endif
+    
 
 
 #else //reading image from host pc
@@ -520,15 +533,19 @@ int start()
         #ifndef FROM_CAMERA
         iter=0;
         #else
-            // iter=0;  // to test read image
+            #ifndef GAP9_EVK
+            
             pi_camera_control(&device, PI_CAMERA_CMD_START, 0);
             pi_camera_capture(&device, ImageInChar, Wcam*Hcam);
             pi_camera_control(&device, PI_CAMERA_CMD_STOP, 0);
-            int Xoffset = (Wcam - 160)/2;
-            int Yoffset = (Hcam - 120)/2;
+            #else   
+            ov9281_capture(ImageInChar);
+            #endif
+            
+            // Resize image captured from camera
             for(int y=0;y<120;y++){
                 for(int x=0;x<160;x++){
-                    ImageIn[y*160+x] = ((short int)ImageInChar[((y+Yoffset)*Wcam)+(x+Xoffset)]) << S0_Op_input_1_Q-8;
+                    ImageIn[y*160+x] = ((short int)ImageInChar[((y+Yoffset)*Wcam)+(x+Xoffset)]) << INPUT_1_Q-8;
                 }
             }
         #endif

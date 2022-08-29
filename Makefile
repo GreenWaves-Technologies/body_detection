@@ -11,7 +11,15 @@
 ## Enable image grub from camera and disaply output to lcd
 #FROM_CAMERA=1
 
-
+## For GAP9_EVK, please connect ili9341 Adafruit lcd screen via 
+## SPI bus to MikroE bus on the chip
+## CS    <=>  CS0 (PI_PAD_034)
+## MISO  <=>  MISO (PI_PAD_039)
+## MOSI  <=>  MOSI (PI_PAD_038)
+## SCK   <=>  SCK (PI_PAD_033)
+## DC3V3 <=>  TX (PI_PAD_045)
+## POWER <=>  3V3 (PI_PAD_035)
+## GND   <=>  GND
 
 ## This is used for Jenkins test to use input form .h header file
 # not used in this project
@@ -67,8 +75,9 @@ ifeq ('$(TARGET_CHIP_FAMILY)','GAP9')
   FREQ_CL?=400
   FREQ_FC?=400
   MODEL_L1_MEMORY=$(shell expr 125000 \- $(TOTAL_STACK_SIZE))  # L1 memory - 125KB
-  MODEL_L2_MEMORY=1300000 # L2 memory - 1.5MB
+  MODEL_L2_MEMORY=200000 # L2 memory - 1.5MB
   MODEL_L3_MEMORY=8388608
+  APP_CFLAGS += -DGAP9_EVK=1
 else
   ifeq ('$(TARGET_CHIP)','GAP8_V3')
     FREQ_CL?=175
@@ -108,13 +117,9 @@ endif
 # qpsiflash - Quad SPI Flash
  
 # MODEL_L3_CONST=AT_MEM_L3_HFLASH
- 
-
 
 pulpChip = GAP
 APP = body_detection
-
-APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_GEN_C) $(CNN_LIB) 
 
 APP_CFLAGS += -g -w #-DNORM_ROUND
 APP_CFLAGS += -O2 -s -mno-memcpy -fno-tree-loop-distribute-patterns
@@ -129,12 +134,23 @@ endif
 
 ifeq ($(FROM_CAMERA),1)
   APP_CFLAGS += -DFROM_CAMERA=1
+  ifeq ('$(TARGET_CHIP_FAMILY)','GAP9')
+  CONFIG_ILI9341 = 1
+  CONFIG_OV9281 = 1
+  CONFIG_DISPLAY = 1
+  APP_CFLAGS += -DWcam=320 -DHcam=240 
+  APP_CFLAGS += -DCAM_FORMAT=PI_CAMERA_QVGA
+  APP_SRCS += mipi_camera.c
+  else
+  APP_CFLAGS += -DWcam=324 -DHcam=244
+  endif
 endif
 
 ifeq ($(NO_BRIDGE),1)
   APP_CFLAGS += -DNO_BRIDGE=1
 endif
 
+APP_SRCS += main.c ImgIO.c ImageDraw.c SSDKernels.c SSDBasicKernels.c SSDParams.c $(MODEL_GEN_C) $(CNN_LIB) 
 
 ifeq ($(platform),gvsoc)
   $(info Platform is GVSOC)
