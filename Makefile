@@ -183,8 +183,8 @@ SSD_model: SSDParams.c
 
 #################
 
-# all depends on the model
-all:: SSD_model model
+# build depends on the model
+build:: SSD_model model
 
 clean:: #clean_model
 	rm -rf BUILD
