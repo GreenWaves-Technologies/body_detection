@@ -49,7 +49,7 @@ $(MODEL_GEN_EXE): $(MODEL_BUILD)/$(MODEL_SRC)
 
 # Run the code generator to generate GAP graph and kernel code
 $(MODEL_GEN_C): $(MODEL_GEN_EXE)
-	$(MODEL_GEN_EXE) -o $(MODEL_BUILD) -c $(MODEL_BUILD) $(MODEL_GEN_EXTRA_FLAGS)
+	$(MODEL_GEN_EXE) -o $(MODEL_BUILD) -c $(TENSORS_DIR) $(MODEL_GEN_EXTRA_FLAGS)
 	
 model: $(MODEL_GEN_C)
 
