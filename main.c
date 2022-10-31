@@ -39,6 +39,8 @@ static pi_buffer_t buffer;
     #define PI_DEVICE_RAM OspiRam
 #elif defined(__AT_MEM_L3_HRAM__)
     #define PI_DEVICE_RAM HyperRam
+#elif defined(__AT_MEM_L3_DEFAULTRAM__)
+    #define PI_DEVICE_RAM DefaultRam
 #else
 #error "no such ram"
 #endif

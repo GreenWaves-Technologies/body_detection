@@ -90,31 +90,32 @@ else
   MODEL_L3_MEMORY=8388608
 endif
 
-ifeq ($(platform),gvsoc)
-  $(info Platform is GVSOC)
-  MODEL_L3_EXEC=AT_MEM_L3_HRAM
-  MODEL_L3_RAM=AT_MEM_L3_HRAM
-  MODEL_L3_FLASH=AT_MEM_L3_HFLASH
-else
-  $(info Platform is GAPUINO)
-  ifeq ('$(TARGET_CHIP_FAMILY)','GAP9')
-    $(info Platform is GAP9)
-    MODEL_L3_EXEC=AT_MEM_L3_OSPIRAM
-    MODEL_L3_RAM=AT_MEM_L3_OSPIRAM
-    MODEL_L3_FLASH=AT_MEM_L3_OSPIFLASH
-  else
-    $(info Platform is GAP8)
-    MODEL_L3_EXEC=AT_MEM_L3_HRAM
-    MODEL_L3_RAM=AT_MEM_L3_HRAM
-    MODEL_L3_FLASH=AT_MEM_L3_HFLASH
-  endif
-endif
-# hram - HyperBus RAM
-# qspiram - Quad SPI RAM
- 
+FLASH_TYPE ?= DEFAULT
+RAM_TYPE   ?= DEFAULT
 
-# hflash - HyperBus Flash
-# qpsiflash - Quad SPI Flash
+ifeq '$(FLASH_TYPE)' 'HYPER'
+  MODEL_L3_FLASH=AT_MEM_L3_HFLASH
+else ifeq '$(FLASH_TYPE)' 'MRAM'
+  MODEL_L3_FLASH=AT_MEM_L3_MRAMFLASH
+  READFS_FLASH = target/chip/soc/mram
+else ifeq '$(FLASH_TYPE)' 'QSPI'
+  MODEL_L3_FLASH=AT_MEM_L3_QSPIFLASH
+else ifeq '$(FLASH_TYPE)' 'OSPI'
+  MODEL_L3_FLASH=AT_MEM_L3_OSPIFLASH
+else ifeq '$(FLASH_TYPE)' 'DEFAULT'
+  MODEL_L3_FLASH=AT_MEM_L3_DEFAULTFLASH
+endif
+
+ifeq '$(RAM_TYPE)' 'HYPER'
+  MODEL_L3_RAM=AT_MEM_L3_HRAM
+else ifeq '$(RAM_TYPE)' 'QSPI'
+  MODEL_L3_RAM=AT_MEM_L3_QSPIRAM
+else ifeq '$(RAM_TYPE)' 'OSPI'
+  MODEL_L3_RAM=AT_MEM_L3_OSPIRAM
+else ifeq '$(RAM_TYPE)' 'DEFAULT'
+  MODEL_L3_RAM=AT_MEM_L3_DEFAULTRAM
+endif
+
  
 # MODEL_L3_CONST=AT_MEM_L3_HFLASH
 
