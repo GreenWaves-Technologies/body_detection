@@ -5,9 +5,7 @@ platforms:
     - gvsoc
 os: 
     - freertos
-    - pulpos
 chips: 
-    - gap8
     - gap9
 variants:
     gap8:
