@@ -23,6 +23,8 @@ variants:
             - gap8
             - gap9
         flags: ~
+        compile_only: true
+
     # gap9:
     #     name: standard
     #     tags:
