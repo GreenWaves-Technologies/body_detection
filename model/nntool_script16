@@ -12,7 +12,7 @@ set graph_reorder_constant_in true
 set graph_produce_node_names true
 set graph_produce_operinfos true
 set graph_monitor_cycles true
-set graph_const_exec_from_flash true
+#set graph_const_exec_from_flash true
 #nodeoption 4 PARALLELFEATURES 0
 ##This is to print a NN node
 ## From AT
