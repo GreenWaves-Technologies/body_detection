@@ -22,7 +22,7 @@
 char SourceOut[]="../SSDParams.c";
 char HeaderOut[]="../SSDParams.h";
 
-#define CONFIDENCE_THR 0.4
+#define CONFIDENCE_THR 0.5
 
 int Q_calc(float min,float max){
 
