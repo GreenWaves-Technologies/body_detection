@@ -161,7 +161,7 @@ static int test_entry() {
 
 
     struct pi_device camera;
-    pi_task_t task;
+    pi_evt_t task;
 
     if (open_camera(&camera))
     {

@@ -12,7 +12,7 @@
 pi_device_t gpio_led;
 
 struct pi_device camera;
-pi_task_t cam_wait_task;
+pi_evt_t cam_wait_task;
 
 static int __write_reg8(pi_device_t *dev, uint8_t addr, uint8_t value)
 {
