@@ -1,34 +1,17 @@
 name: body_detection
-boards: []
-platforms: 
-    - board
-    - gvsoc
-os: 
-    - freertos
-chips: 
-    - gap9
 variants:
-    gap8:
-        name: standard
-        tags:
-            - integration
-            - release
-        duration: standard
-        os: 
-           - pulpos
-           - freertos
-        chips:
-            - gap8
-            - gap9
+    gvsoc:
+        chip: gap9
+        board: gap9evk
+        platform: gvsoc
+        os: freertos
+        builder: make
         flags: ~
-    # gap9:
-    #     name: standard
-    #     tags:
-    #         - integration
-    #         - release
-    #     os: 
-    #        - pulpos
-    #     chips:
-    #         - gap9
-    #     duration: standard
-    #     flags: ~
+
+    board:
+        chip: gap9
+        board: gap9evk
+        platform: board
+        os: freertos
+        builder: make
+        flags: ~
